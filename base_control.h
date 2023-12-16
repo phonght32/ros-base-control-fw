@@ -97,6 +97,73 @@ err_code_t base_control_imu_get_quat(float *q0, float *q1, float *q2, float* q3)
  */
 err_code_t base_control_motor_init(base_control_motor_cfg_t cfg);
 
+/*
+ * @brief  	Start motor left.
+ *
+ * @param   None.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_motor_left_start(void);
+
+/*
+ * @brief  	Stop motor left.
+ *
+ * @param   None.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_motor_left_stop(void);
+
+/*
+ * @brief  	Set speed motor left.
+ *
+ * @param   speed Speed in m/s.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_motor_left_set_speed(float speed);
+
+/*
+ * @brief  	Start motor right.
+ *
+ * @param   None.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_motor_right_start(void);
+
+/*
+ * @brief  	Stop motor right.
+ *
+ * @param   None.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_motor_right_stop(void);
+
+/*
+ * @brief  	Set speed motor right.
+ *
+ * @param   speed Speed in m/s.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_motor_right_set_speed(float speed);
+
+
 #ifdef __cplusplus
 }
 #endif

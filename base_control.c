@@ -195,3 +195,95 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
 
 	return ERR_CODE_SUCCESS;
 }
+
+err_code_t base_control_motor_left_start(void)
+{
+	if (leftmotor_handle == NULL)
+    {
+        return ERR_CODE_NULL_PTR;
+    }
+
+    err_code_t err;
+
+    err = stepmotor_start(leftmotor_handle);
+    if (err != ERR_CODE_SUCCESS)
+    {
+        return err;
+    }
+
+    return ERR_CODE_SUCCESS;
+}
+err_code_t base_control_motor_left_stop(void)
+{
+	if (leftmotor_handle == NULL)
+    {
+        return ERR_CODE_NULL_PTR;
+    }
+
+    err_code_t err;
+
+    err = stepmotor_stop(leftmotor_handle);
+    if (err != ERR_CODE_SUCCESS)
+    {
+        return err;
+    }
+
+    return ERR_CODE_SUCCESS;
+}
+
+err_code_t base_control_motor_left_set_speed(float speed)
+{
+	if (leftmotor_handle == NULL)
+    {
+        return ERR_CODE_NULL_PTR;
+    }
+
+    return ERR_CODE_SUCCESS;
+}
+
+err_code_t base_control_motor_right_start(void)
+{
+	if (rightmotor_handle == NULL)
+    {
+        return ERR_CODE_NULL_PTR;
+    }
+
+    err_code_t err;
+
+    err = stepmotor_start(rightmotor_handle);
+    if (err != ERR_CODE_SUCCESS)
+    {
+        return err;
+    }
+
+    return ERR_CODE_SUCCESS;
+}
+
+err_code_t base_control_motor_right_stop(void)
+{
+	if (rightmotor_handle == NULL)
+    {
+        return ERR_CODE_NULL_PTR;
+    }
+
+    err_code_t err;
+
+    err = stepmotor_stop(rightmotor_handle);
+    if (err != ERR_CODE_SUCCESS)
+    {
+        return err;
+    }
+
+    return ERR_CODE_SUCCESS;
+}
+
+err_code_t base_control_motor_right_set_speed(float speed)
+{
+	if (rightmotor_handle == NULL)
+    {
+        return ERR_CODE_NULL_PTR;
+    }
+
+    return ERR_CODE_SUCCESS;
+}
+
