@@ -3,9 +3,9 @@
 #include "madgwick/imu_madgwick.h"
 
 
-func_read_bytes mpu6050_read_bytes = NULL;
-func_write_bytes mpu6050_write_bytes = NULL;
-func_delay delay = NULL;
+imu_func_read_bytes mpu6050_read_bytes = NULL;
+imu_func_write_bytes mpu6050_write_bytes = NULL;
+imu_func_delay delay = NULL;
 
 imu_handle_t imu_handle = NULL;
 imu_madgwick_handle_t imu_madgwick_handle = NULL;

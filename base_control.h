@@ -32,9 +32,9 @@ extern "C" {
 #include "err_code.h"
 
 typedef struct {
-	func_read_bytes 	mpu6050_read_bytes;
-	func_write_bytes 	mpu6050_write_bytes;
-	func_delay 			delay;
+	imu_func_read_bytes 	mpu6050_read_bytes;
+	imu_func_write_bytes 	mpu6050_write_bytes;
+	imu_func_delay 			delay;
 } base_control_cfg_t;
 
 /*
