@@ -1,3 +1,6 @@
 [submodule "imu"]
 	path = imu
 	url = git@github.com:phonght32/imu.git
+[submodule "imu_filter"]
+	path = imu_filter
+	url = git@github.com:phonght32/imu_filter.git
