@@ -1,3 +1,4 @@
+#include "hw_define.h"
 #include "base_control.h"
 #include "imu.h"
 #include "madgwick/imu_madgwick.h"
@@ -7,6 +8,8 @@ imu_handle_t imu_handle = NULL;
 imu_madgwick_handle_t imu_madgwick_handle = NULL;
 stepmotor_handle_t leftmotor_handle = NULL;
 stepmotor_handle_t rightmotor_handle = NULL;
+resolver_handle_t resolver_left = NULL;
+resolver_handle_t resolver_right = NULL;
 
 err_code_t base_control_imu_init(base_control_imu_cfg_t cfg)
 {
@@ -238,6 +241,19 @@ err_code_t base_control_motor_left_set_speed(float speed)
         return ERR_CODE_NULL_PTR;
     }
 
+    if (speed < 0)
+    {
+        stepmotor_set_dir(leftmotor_handle, MOTORLEFT_DIR_BACKWARD);
+        resolver_set_mode_down(resolver_left);
+        stepmotor_set_pwm_freq(leftmotor_handle, (uint32_t)(-speed * VEL2FREQ));
+    }
+    else
+    {
+        stepmotor_set_dir(leftmotor_handle, MOTORLEFT_DIR_FORWARD);
+        resolver_set_mode_up(resolver_left);
+        stepmotor_set_pwm_freq(leftmotor_handle, (uint32_t)(speed * VEL2FREQ));
+    }
+
     return ERR_CODE_SUCCESS;
 }
 
@@ -282,6 +298,19 @@ err_code_t base_control_motor_right_set_speed(float speed)
 	if (rightmotor_handle == NULL)
     {
         return ERR_CODE_NULL_PTR;
+    }
+
+    if (speed < 0)
+    {
+        stepmotor_set_dir(rightmotor_handle, MOTORLEFT_DIR_BACKWARD);
+        resolver_set_mode_down(resolver_right);
+        stepmotor_set_pwm_freq(rightmotor_handle, (uint32_t)(-speed * VEL2FREQ));
+    }
+    else
+    {
+        stepmotor_set_dir(rightmotor_handle, MOTORLEFT_DIR_FORWARD);
+        resolver_set_mode_up(resolver_right);
+        stepmotor_set_pwm_freq(rightmotor_handle, (uint32_t)(speed * VEL2FREQ));
     }
 
     return ERR_CODE_SUCCESS;

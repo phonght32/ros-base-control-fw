@@ -31,6 +31,42 @@ extern "C" {
 // #define USE_MPU6500
 // #define USE_AK8963
 
+#define PI                  3.14159265359
+
+/* Convert constant */
+#define DEG2RAD(x)      (x * PI / 180.0f)     /*!< Convert from degree to radian (PI/180) */
+#define RAD2DEG(x)      (x * 180.0f / PI)     /*!< convert from radian to degree (180/PI) */
+
+/* Step motor direction index */
+#define MOTORLEFT_DIR_FORWARD       0
+#define MOTORLEFT_DIR_BACKWARD      1
+#define MOTORRIGHT_DIR_FORWARD      1
+#define MOTORRIGHT_DIR_BACKWARD     0
+
+/* Robot parameters */
+#define WHEEL_RADIUS                0.033                                   /*!< Wheel radius in meter */
+#define WHEEL_SEPARATION            0.165                                   /*!< Wheel separate distance in meter */
+#define TURNING_RADIUS              0.08                                    /*!< Turning radius in degree */
+#define ROBOT_RADIUS                0.1                                     /*!< Robot radius in meter    */
+#define MAX_LINEAR_VELOCITY         (WHEEL_RADIUS * 2 * PI * 60 / 60)       /*!< Max linear velocity */
+#define MAX_ANGULAR_VELOCITY        (MAX_LINEAR_VELOCITY / TURNING_RADIUS)  /*!< Max angular velocity */
+#define MIN_LINEAR_VELOCITY         -MAX_LINEAR_VELOCITY                    /*!< Min linear velocity */
+#define MIN_ANGULAR_VELOCITY        -MAX_ANGULAR_VELOCITY                   /*!< Min angular velocity */
+
+/* Step driver parameters */
+#define MICROSTEP_DIV               8           /*!< Step driver microstep divider */
+#define NUM_PULSE_PER_ROUND         200         /*!< The number of pulse per round of motor */
+
+/*
+ *  Convert from velocity (m/s) to frequency (Hz) for motor driver.
+ *
+ *                      2*pi*WHELL_RADIUS
+ *  velocity (m/s) =  ------------------------------
+ *                    NUM_PULSE_PER_ROUND * STEP_DIV
+ *
+ */
+#define VEL2FREQ        ((NUM_PULSE_PER_ROUND*MICROSTEP_DIV)/(2*PI*WHEEL_RADIUS))
+
 
 #ifdef __cplusplus
 }
