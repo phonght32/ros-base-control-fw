@@ -36,7 +36,7 @@ typedef struct {
 	imu_func_read_bytes 		mpu6050_read_bytes;			/*!< MPU6050 read bytes */
 	imu_func_write_bytes 		mpu6050_write_bytes;		/*!< MPU6050 write bytes */
 	imu_func_delay 				delay;						/*!< IMU delay function */
-} base_control_cfg_t;
+} base_control_imu_cfg_t;
 
 typedef struct {
 	stepmotor_func_set_pwm_duty leftmotor_set_pwm_duty;		/*!< Function set PWM duty */
@@ -50,9 +50,7 @@ typedef struct {
 } base_control_motor_cfg_t;
 
 /*
- * @brief  	Set hardware interface functions to initialize peripherals.
- *
- * @note 	Hardware interface functions need to be assigned before any activity.
+ * @brief  	Initialize IMU and filter.
  *
  * @param   cfg Configuration structure.
  *
@@ -60,18 +58,7 @@ typedef struct {
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_set_hw_intf(base_control_cfg_t cfg);
-
-/*
- * @brief  	Initialize IMU and filter.
- *
- * @param   None.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
-err_code_t base_control_imu_init(void);
+err_code_t base_control_imu_init(base_control_imu_cfg_t cfg);
 
 /*
  * @brief  	Update quaternion.

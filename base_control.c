@@ -3,27 +3,12 @@
 #include "madgwick/imu_madgwick.h"
 #include "stepmotor.h"
 
-
-imu_func_read_bytes mpu6050_read_bytes = NULL;
-imu_func_write_bytes mpu6050_write_bytes = NULL;
-imu_func_delay delay = NULL;
-
 imu_handle_t imu_handle = NULL;
 imu_madgwick_handle_t imu_madgwick_handle = NULL;
 stepmotor_handle_t leftmotor_handle = NULL;
 stepmotor_handle_t rightmotor_handle = NULL;
 
-err_code_t base_control_set_hw_intf(base_control_cfg_t cfg)
-{
-	mpu6050_read_bytes = cfg.mpu6050_read_bytes;
-	mpu6050_write_bytes = cfg.mpu6050_write_bytes;
-	delay = cfg.delay;
-
-	return ERR_CODE_SUCCESS;
-}
-
-
-err_code_t base_control_imu_init(void)
+err_code_t base_control_imu_init(base_control_imu_cfg_t cfg)
 {
 	/* Config MPU6500 and AK8963 */
 	imu_handle = imu_init();
@@ -47,9 +32,9 @@ err_code_t base_control_imu_init(void)
 		.mag_soft_iron_bias_x = 0,
 		.mag_soft_iron_bias_y = 0,
 		.mag_soft_iron_bias_z = 0,
-		.func_delay = delay,
-		.mpu6050_read_bytes = mpu6050_read_bytes,
-		.mpu6050_write_bytes = mpu6050_write_bytes
+		.func_delay = cfg.delay,
+		.mpu6050_read_bytes = cfg.mpu6050_read_bytes,
+		.mpu6050_write_bytes = cfg.mpu6050_write_bytes
 	};
 	err_ret = imu_set_config(imu_handle, imu_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
