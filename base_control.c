@@ -154,7 +154,8 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
         .set_pwm_duty = cfg.leftmotor_set_pwm_duty,
         .set_pwm_freq = cfg.leftmotor_set_pwm_freq,
         .start_pwm = cfg.leftmotor_start_pwm,
-        .stop_pwm = cfg.leftmotor_stop_pwm
+        .stop_pwm = cfg.leftmotor_stop_pwm,
+        .set_dir = cfg.leftmotor_set_dir
     };
     err_ret = stepmotor_set_config(leftmotor_handle, leftmotor_cfg);
     if (err_ret != ERR_CODE_SUCCESS)
@@ -182,7 +183,8 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
         .set_pwm_duty = cfg.rightmotor_set_pwm_duty,
         .set_pwm_freq = cfg.rightmotor_set_pwm_freq,
         .start_pwm = cfg.rightmotor_start_pwm,
-        .stop_pwm = cfg.rightmotor_stop_pwm
+        .stop_pwm = cfg.rightmotor_stop_pwm,
+        .set_dir = cfg.rightmotor_set_dir
     };
     err_ret = stepmotor_set_config(rightmotor_handle, rightmotor_cfg);
     if (err_ret != ERR_CODE_SUCCESS)

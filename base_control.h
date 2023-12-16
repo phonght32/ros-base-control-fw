@@ -44,10 +44,12 @@ typedef struct {
 	stepmotor_func_set_pwm_freq leftmotor_set_pwm_freq;		/*!< Function set PWM frequency */
 	stepmotor_func_start_pwm 	leftmotor_start_pwm;		/*!< Function start PWM */
 	stepmotor_func_stop_pwm 	leftmotor_stop_pwm;			/*!< Function stop PWM */
+	stepmotor_func_set_dir 		leftmotor_set_dir;			/*!< Function set direction */
 	stepmotor_func_set_pwm_duty rightmotor_set_pwm_duty;	/*!< Function set PWM duty */
 	stepmotor_func_set_pwm_freq rightmotor_set_pwm_freq;	/*!< Function set PWM frequency */
 	stepmotor_func_start_pwm 	rightmotor_start_pwm;		/*!< Function start PWM */
 	stepmotor_func_stop_pwm 	rightmotor_stop_pwm;		/*!< Function stop PWM */
+	stepmotor_func_set_dir 		rightmotor_set_dir;			/*!< Function set direction */
 } base_control_motor_cfg_t;
 
 /*
