@@ -52,6 +52,23 @@ typedef struct {
 	stepmotor_func_set_dir 		rightmotor_set_dir;			/*!< Function set direction */
 } base_control_motor_cfg_t;
 
+typedef struct {
+	uint32_t 					left_resolver_max_reload;           /*!< Max reload value */
+	resolver_func_start 		left_resolver_start;				/*!< Function start resolver */
+	resolver_func_stop 			left_resolver_stop;					/*!< Function stop resolver */
+	resolver_func_set_counter 	left_resolver_set_counter;			/*!< Function set counter */
+	resolver_func_get_counter 	left_resolver_get_counter;			/*!< Function get counter */
+	resolver_func_set_mode_up	left_resolver_set_mode_up;			/*!< Function set mode counter up */
+	resolver_func_set_mode_down left_resolver_set_mode_down;		/*!< Function set mode counter down */
+	uint32_t 					right_resolver_max_reload;          /*!< Max reload value */
+	resolver_func_start 		right_resolver_start;				/*!< Function start resolver */
+	resolver_func_stop 			right_resolver_stop;				/*!< Function stop resolver */
+	resolver_func_set_counter 	right_resolver_set_counter;			/*!< Function set counter */
+	resolver_func_get_counter 	right_resolver_get_counter;			/*!< Function get counter */
+	resolver_func_set_mode_up	right_resolver_set_mode_up;			/*!< Function set mode counter up */
+	resolver_func_set_mode_down right_resolver_set_mode_down;		/*!< Function set mode counter down */
+} base_control_resolver_cfg_t;
+
 /*
  * @brief  	Initialize IMU and filter.
  *
@@ -91,7 +108,7 @@ err_code_t base_control_imu_get_quat(float *q0, float *q1, float *q2, float* q3)
 /*
  * @brief  	Initialize all motor.
  *
- * @param   None.
+ * @param   cfg Configuration structure.
  *
  * @return
  *      - ERR_CODE_SUCCESS:	Success.
@@ -164,6 +181,39 @@ err_code_t base_control_motor_right_stop(void);
  *      - Others:   		Fail.
  */
 err_code_t base_control_motor_right_set_speed(float speed);
+
+/*
+ * @brief  	Initialize resolver.
+ *
+ * @param   cfg Configuration structure.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_resolver_init(base_control_resolver_cfg_t cfg);
+
+/*
+ * @brief  	Get left resolver tick.
+ *
+ * @param   left_tick Left tick value.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_resolver_left_get_tick(int32_t *tick);
+
+/*
+ * @brief  	Get right resolver tick.
+ *
+ * @param   tick Right tick value.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_resolver_right_get_tick(int32_t *tick);
 
 
 #ifdef __cplusplus
