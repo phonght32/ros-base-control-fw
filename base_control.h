@@ -29,6 +29,7 @@ extern "C" {
 
 #include "imu_intf.h"
 #include "stepmotor.h"
+#include "resolver.h"
 
 #include "err_code.h"
 
