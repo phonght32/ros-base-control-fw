@@ -34,8 +34,24 @@ extern "C" {
 #include "err_code.h"
 
 typedef struct {
+	int16_t             		accel_bias_x;				/*!< Accelerometer bias of x axis */
+    int16_t             		accel_bias_y;				/*!< Accelerometer bias of y axis */
+    int16_t             		accel_bias_z;				/*!< Accelerometer bias of z axis */
+    int16_t             		gyro_bias_x;				/*!< Gyroscope bias of x axis */
+    int16_t             		gyro_bias_y;				/*!< Gyroscope bias of y axis */
+    int16_t             		gyro_bias_z;				/*!< Gyroscope bias of z axis */
+    float               		mag_hard_iron_bias_x;		/*!< Magnetometer hard iron bias of x axis */
+    float               		mag_hard_iron_bias_y;		/*!< Magnetometer hard iron bias of y axis */
+    float               		mag_hard_iron_bias_z;		/*!< Magnetometer hard iron bias of z axis */
+    float               		mag_soft_iron_bias_x;		/*!< Magnetometer soft iron bias of x axis */
+    float               		mag_soft_iron_bias_y;		/*!< Magnetometer soft iron bias of y axis */
+    float               		mag_soft_iron_bias_z;		/*!< Magnetometer soft iron bias of z axis */
 	imu_func_read_bytes 		mpu6050_read_bytes;			/*!< MPU6050 read bytes */
 	imu_func_write_bytes 		mpu6050_write_bytes;		/*!< MPU6050 write bytes */
+	imu_func_read_bytes     	ak8963_read_bytes;			/*!< AK8963 write bytes */
+    imu_func_write_bytes    	ak8963_write_bytes;			/*!< AK8963 write bytes */
+    imu_func_read_bytes     	mpu6500_read_bytes;			/*!< MPU6500 write bytes */
+    imu_func_write_bytes    	mpu6500_write_bytes;		/*!< MPU6500 write bytes */
 	imu_func_delay 				delay;						/*!< IMU delay function */
 } base_control_imu_cfg_t;
 

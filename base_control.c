@@ -23,21 +23,25 @@ err_code_t base_control_imu_init(base_control_imu_cfg_t cfg)
 	err_code_t err_ret;
 
 	imu_cfg_t imu_cfg = {
-		.accel_bias_x = 0,
-		.accel_bias_y = 0,
-		.accel_bias_z = 0,
-		.gyro_bias_x = 0,
-		.gyro_bias_y = 0,
-		.gyro_bias_z = 0,
-		.mag_hard_iron_bias_x = 0,
-		.mag_hard_iron_bias_y = 0,
-		.mag_hard_iron_bias_z = 0,
-		.mag_soft_iron_bias_x = 0,
-		.mag_soft_iron_bias_y = 0,
-		.mag_soft_iron_bias_z = 0,
+		.accel_bias_x = cfg.accel_bias_x,
+		.accel_bias_y = cfg.accel_bias_y,
+		.accel_bias_z = cfg.accel_bias_z,
+		.gyro_bias_x = cfg.gyro_bias_x,
+		.gyro_bias_y = cfg.gyro_bias_y,
+		.gyro_bias_z = cfg.gyro_bias_z,
+		.mag_hard_iron_bias_x = cfg.mag_hard_iron_bias_x,
+		.mag_hard_iron_bias_y = cfg.mag_hard_iron_bias_y,
+		.mag_hard_iron_bias_z = cfg.mag_hard_iron_bias_z,
+		.mag_soft_iron_bias_x = cfg.mag_soft_iron_bias_x,
+		.mag_soft_iron_bias_y = cfg.mag_soft_iron_bias_y,
+		.mag_soft_iron_bias_z = cfg.mag_soft_iron_bias_z,
 		.func_delay = cfg.delay,
 		.mpu6050_read_bytes = cfg.mpu6050_read_bytes,
-		.mpu6050_write_bytes = cfg.mpu6050_write_bytes
+		.mpu6050_write_bytes = cfg.mpu6050_write_bytes,
+		.ak8963_read_bytes = cfg.ak8963_read_bytes,
+		.ak8963_write_bytes = cfg.ak8963_write_bytes,
+		.mpu6500_read_bytes = cfg.mpu6500_read_bytes,
+		.mpu6500_write_bytes = cfg.mpu6500_write_bytes,
 	};
 	err_ret = imu_set_config(imu_handle, imu_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
