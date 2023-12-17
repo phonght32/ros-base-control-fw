@@ -19,6 +19,9 @@
 #define DEFAULT_MAG_SOFT_BIAS_Y				0
 #define DEFAULT_MAG_SOFT_BIAS_Z				0
 
+#define RESOLVER_COUNTER_MODE_UP  			0
+#define RESOLVER_COUNTER_MODE_DOWN  		1
+
 imu_handle_t imu_handle = NULL;
 imu_madgwick_handle_t imu_madgwick_handle = NULL;
 stepmotor_handle_t leftmotor_handle = NULL;
@@ -265,13 +268,13 @@ err_code_t base_control_motor_left_set_speed(float speed)
 	if (speed < 0)
 	{
 		stepmotor_set_dir(leftmotor_handle, MOTORLEFT_DIR_BACKWARD);
-		resolver_set_mode(resolver_left_handle, 1);
+		resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_DOWN);
 		stepmotor_set_pwm_freq(leftmotor_handle, (uint32_t)(-speed * VEL2FREQ));
 	}
 	else
 	{
 		stepmotor_set_dir(leftmotor_handle, MOTORLEFT_DIR_FORWARD);
-		resolver_set_mode(resolver_left_handle, 0);
+		resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_UP);
 		stepmotor_set_pwm_freq(leftmotor_handle, (uint32_t)(speed * VEL2FREQ));
 	}
 
@@ -324,13 +327,13 @@ err_code_t base_control_motor_right_set_speed(float speed)
 	if (speed < 0)
 	{
 		stepmotor_set_dir(rightmotor_handle, MOTORLEFT_DIR_BACKWARD);
-		resolver_set_mode(resolver_right_handle, 1);
+		resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_DOWN);
 		stepmotor_set_pwm_freq(rightmotor_handle, (uint32_t)(-speed * VEL2FREQ));
 	}
 	else
 	{
 		stepmotor_set_dir(rightmotor_handle, MOTORLEFT_DIR_FORWARD);
-		resolver_set_mode(resolver_right_handle, 0);
+		resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_UP);
 		stepmotor_set_pwm_freq(rightmotor_handle, (uint32_t)(speed * VEL2FREQ));
 	}
 
