@@ -53,11 +53,17 @@ typedef struct {
 } base_control_imu_filter_cfg_t;
 
 typedef struct {
+	uint8_t                		leftmotor_dir;            	/*!< Direction */
+	uint32_t            		leftmotor_freq_hz;        	/*!< PWM frequency in Hz */
+	float 						leftmotor_duty;				/*!< PWM duty cycle */
 	stepmotor_func_set_pwm_duty leftmotor_set_pwm_duty;		/*!< Function set PWM duty */
 	stepmotor_func_set_pwm_freq leftmotor_set_pwm_freq;		/*!< Function set PWM frequency */
 	stepmotor_func_start_pwm 	leftmotor_start_pwm;		/*!< Function start PWM */
 	stepmotor_func_stop_pwm 	leftmotor_stop_pwm;			/*!< Function stop PWM */
 	stepmotor_func_set_dir 		leftmotor_set_dir;			/*!< Function set direction */
+	uint8_t                		rightmotor_dir;            	/*!< Direction */
+	uint32_t            		rightmotor_freq_hz;        	/*!< PWM frequency in Hz */
+	float 						rightmotor_duty;			/*!< PWM duty cycle */
 	stepmotor_func_set_pwm_duty rightmotor_set_pwm_duty;	/*!< Function set PWM duty */
 	stepmotor_func_set_pwm_freq rightmotor_set_pwm_freq;	/*!< Function set PWM frequency */
 	stepmotor_func_start_pwm 	rightmotor_start_pwm;		/*!< Function start PWM */

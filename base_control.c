@@ -170,9 +170,9 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
 	}
 
 	stepmotor_cfg_t leftmotor_cfg = {
-		.dir = 0,
-		.duty = 0,
-		.freq_hz = 0,
+		.dir = cfg.leftmotor_dir,
+		.duty = cfg.leftmotor_duty,
+		.freq_hz = cfg.leftmotor_freq_hz,
 		.set_pwm_duty = cfg.leftmotor_set_pwm_duty,
 		.set_pwm_freq = cfg.leftmotor_set_pwm_freq,
 		.start_pwm = cfg.leftmotor_start_pwm,
@@ -199,9 +199,9 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
 	}
 
 	stepmotor_cfg_t rightmotor_cfg = {
-		.dir = 0,
-		.duty = 0,
-		.freq_hz = 0,
+		.dir = cfg.rightmotor_dir,
+		.duty = cfg.rightmotor_duty,
+		.freq_hz = cfg.rightmotor_freq_hz,
 		.set_pwm_duty = cfg.rightmotor_set_pwm_duty,
 		.set_pwm_freq = cfg.rightmotor_set_pwm_freq,
 		.start_pwm = cfg.rightmotor_start_pwm,
