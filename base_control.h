@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-#include "imu_intf.h"
+#include "imu.h"
 #include "stepmotor.h"
 #include "resolver.h"
 
