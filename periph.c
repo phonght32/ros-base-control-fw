@@ -1,5 +1,5 @@
 #include "hw_define.h"
-#include "base_control.h"
+#include "periph.h"
 #include "imu.h"
 #include "madgwick/imu_madgwick.h"
 #include "stepmotor.h"
@@ -29,7 +29,7 @@ stepmotor_handle_t motor_right_handle = NULL;
 resolver_handle_t resolver_left_handle = NULL;
 resolver_handle_t resolver_right_handle = NULL;
 
-err_code_t base_control_imu_init(base_control_imu_cfg_t cfg)
+err_code_t periph_imu_init(periph_imu_cfg_t cfg)
 {
 	/* Config MPU6500 and AK8963 */
 	imu_handle = imu_init();
@@ -78,7 +78,7 @@ err_code_t base_control_imu_init(base_control_imu_cfg_t cfg)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_imu_filter_init(base_control_imu_filter_cfg_t cfg)
+err_code_t periph_imu_filter_init(periph_imu_filter_cfg_t cfg)
 {
 	/* Config madgwick filter */
 	err_code_t err_ret;
@@ -108,7 +108,7 @@ err_code_t base_control_imu_filter_init(base_control_imu_filter_cfg_t cfg)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_imu_update_quat(void)
+err_code_t periph_imu_update_quat(void)
 {
 	if ((imu_handle == NULL) || (imu_madgwick_handle == NULL))
 	{
@@ -140,7 +140,7 @@ err_code_t base_control_imu_update_quat(void)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_imu_get_quat(float *q0, float *q1, float *q2, float* q3)
+err_code_t periph_imu_get_quat(float *q0, float *q1, float *q2, float* q3)
 {
 	if (imu_madgwick_handle == NULL)
 	{
@@ -158,7 +158,7 @@ err_code_t base_control_imu_get_quat(float *q0, float *q1, float *q2, float* q3)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
+err_code_t periph_motor_init(periph_motor_cfg_t cfg)
 {
 	err_code_t err_ret;
 
@@ -223,7 +223,7 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_motor_left_start(void)
+err_code_t periph_motor_left_start(void)
 {
 	if (motor_left_handle == NULL)
 	{
@@ -240,7 +240,7 @@ err_code_t base_control_motor_left_start(void)
 
 	return ERR_CODE_SUCCESS;
 }
-err_code_t base_control_motor_left_stop(void)
+err_code_t periph_motor_left_stop(void)
 {
 	if (motor_left_handle == NULL)
 	{
@@ -258,7 +258,7 @@ err_code_t base_control_motor_left_stop(void)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_motor_left_set_speed(float speed)
+err_code_t periph_motor_left_set_speed(float speed)
 {
 	if (motor_left_handle == NULL)
 	{
@@ -281,7 +281,7 @@ err_code_t base_control_motor_left_set_speed(float speed)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_motor_right_start(void)
+err_code_t periph_motor_right_start(void)
 {
 	if (motor_right_handle == NULL)
 	{
@@ -299,7 +299,7 @@ err_code_t base_control_motor_right_start(void)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_motor_right_stop(void)
+err_code_t periph_motor_right_stop(void)
 {
 	if (motor_right_handle == NULL)
 	{
@@ -317,7 +317,7 @@ err_code_t base_control_motor_right_stop(void)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_motor_right_set_speed(float speed)
+err_code_t periph_motor_right_set_speed(float speed)
 {
 	if (motor_right_handle == NULL)
 	{
@@ -340,7 +340,7 @@ err_code_t base_control_motor_right_set_speed(float speed)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_resolver_init(base_control_resolver_cfg_t cfg)
+err_code_t periph_resolver_init(periph_resolver_cfg_t cfg)
 {
 	err_code_t err_ret;
 
@@ -401,7 +401,7 @@ err_code_t base_control_resolver_init(base_control_resolver_cfg_t cfg)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_resolver_left_get_tick(int32_t *tick)
+err_code_t periph_resolver_left_get_tick(int32_t *tick)
 {
 	if (resolver_left_handle == NULL)
 	{
@@ -418,7 +418,7 @@ err_code_t base_control_resolver_left_get_tick(int32_t *tick)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t base_control_resolver_right_get_tick(int32_t *tick)
+err_code_t periph_resolver_right_get_tick(int32_t *tick)
 {
 	if (resolver_right_handle == NULL)
 	{

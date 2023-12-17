@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __BASE_CONTROL_H__
-#define __BASE_CONTROL_H__
+#ifndef __PERIPH_H__
+#define __PERIPH_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,12 +45,12 @@ typedef struct {
 	imu_func_read_bytes     	mpu6500_read_bytes;			/*!< MPU6500 write bytes */
 	imu_func_write_bytes    	mpu6500_write_bytes;		/*!< MPU6500 write bytes */
 	imu_func_delay 				func_delay;					/*!< IMU delay function */
-} base_control_imu_cfg_t;
+} periph_imu_cfg_t;
 
 typedef struct {
 	float beta;
 	float sample_freq;
-} base_control_imu_filter_cfg_t;
+} periph_imu_filter_cfg_t;
 
 typedef struct {
 	uint8_t                		leftmotor_dir;            	/*!< Direction */
@@ -69,7 +69,7 @@ typedef struct {
 	stepmotor_func_start_pwm 	rightmotor_start_pwm;		/*!< Function start PWM */
 	stepmotor_func_stop_pwm 	rightmotor_stop_pwm;		/*!< Function stop PWM */
 	stepmotor_func_set_dir 		rightmotor_set_dir;			/*!< Function set direction */
-} base_control_motor_cfg_t;
+} periph_motor_cfg_t;
 
 typedef struct {
 	uint32_t 					left_resolver_max_reload;           /*!< Max reload value */
@@ -84,7 +84,7 @@ typedef struct {
 	resolver_func_set_counter 	right_resolver_set_counter;			/*!< Function set counter */
 	resolver_func_get_counter 	right_resolver_get_counter;			/*!< Function get counter */
 	resolver_func_set_mode		right_resolver_set_mode;			/*!< Function set mode counter up */
-} base_control_resolver_cfg_t;
+} periph_resolver_cfg_t;
 
 /*
  * @brief  	Initialize IMU.
@@ -95,7 +95,7 @@ typedef struct {
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_imu_init(base_control_imu_cfg_t cfg);
+err_code_t periph_imu_init(periph_imu_cfg_t cfg);
 
 /*
  * @brief  	Initialize IMU filter.
@@ -106,7 +106,7 @@ err_code_t base_control_imu_init(base_control_imu_cfg_t cfg);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_imu_filter_init(base_control_imu_filter_cfg_t cfg);
+err_code_t periph_imu_filter_init(periph_imu_filter_cfg_t cfg);
 
 /*
  * @brief  	Update quaternion.
@@ -117,7 +117,7 @@ err_code_t base_control_imu_filter_init(base_control_imu_filter_cfg_t cfg);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_imu_update_quat(void);
+err_code_t periph_imu_update_quat(void);
 
 /*
  * @brief  	Get quaternion.
@@ -131,7 +131,7 @@ err_code_t base_control_imu_update_quat(void);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_imu_get_quat(float *q0, float *q1, float *q2, float* q3);
+err_code_t periph_imu_get_quat(float *q0, float *q1, float *q2, float* q3);
 
 /*
  * @brief  	Initialize all motor.
@@ -142,7 +142,7 @@ err_code_t base_control_imu_get_quat(float *q0, float *q1, float *q2, float* q3)
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_motor_init(base_control_motor_cfg_t cfg);
+err_code_t periph_motor_init(periph_motor_cfg_t cfg);
 
 /*
  * @brief  	Start motor left.
@@ -153,7 +153,7 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_motor_left_start(void);
+err_code_t periph_motor_left_start(void);
 
 /*
  * @brief  	Stop motor left.
@@ -164,7 +164,7 @@ err_code_t base_control_motor_left_start(void);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_motor_left_stop(void);
+err_code_t periph_motor_left_stop(void);
 
 /*
  * @brief  	Set speed motor left.
@@ -175,7 +175,7 @@ err_code_t base_control_motor_left_stop(void);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_motor_left_set_speed(float speed);
+err_code_t periph_motor_left_set_speed(float speed);
 
 /*
  * @brief  	Start motor right.
@@ -186,7 +186,7 @@ err_code_t base_control_motor_left_set_speed(float speed);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_motor_right_start(void);
+err_code_t periph_motor_right_start(void);
 
 /*
  * @brief  	Stop motor right.
@@ -197,7 +197,7 @@ err_code_t base_control_motor_right_start(void);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_motor_right_stop(void);
+err_code_t periph_motor_right_stop(void);
 
 /*
  * @brief  	Set speed motor right.
@@ -208,7 +208,7 @@ err_code_t base_control_motor_right_stop(void);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_motor_right_set_speed(float speed);
+err_code_t periph_motor_right_set_speed(float speed);
 
 /*
  * @brief  	Initialize resolver.
@@ -219,7 +219,7 @@ err_code_t base_control_motor_right_set_speed(float speed);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_resolver_init(base_control_resolver_cfg_t cfg);
+err_code_t periph_resolver_init(periph_resolver_cfg_t cfg);
 
 /*
  * @brief  	Get left resolver tick.
@@ -230,7 +230,7 @@ err_code_t base_control_resolver_init(base_control_resolver_cfg_t cfg);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_resolver_left_get_tick(int32_t *tick);
+err_code_t periph_resolver_left_get_tick(int32_t *tick);
 
 /*
  * @brief  	Get right resolver tick.
@@ -241,11 +241,11 @@ err_code_t base_control_resolver_left_get_tick(int32_t *tick);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t base_control_resolver_right_get_tick(int32_t *tick);
+err_code_t periph_resolver_right_get_tick(int32_t *tick);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __BASE_CONTROL_H__ */
+#endif /* __PERIPH_H__ */
