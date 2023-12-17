@@ -42,6 +42,7 @@ bool base_control_calc_odom(float diff_time);
  */
 sensor_msgs::Imu base_control_get_imu(void);
 
+base_control_get_time_milisec get_time_milis = NULL;
 
 char log_msg[100];                  /*!< Log message buffer */
 ros::NodeHandle nh;                 /*!< ROS node handle */
@@ -98,7 +99,7 @@ bool setup_end        = false;
 
 uint32_t millis(void)
 {
-    return HAL_GetTick();
+    return get_time_milis();
 }
 
 float constrain(float x, float low_val, float high_val)
@@ -119,6 +120,11 @@ float constrain(float x, float low_val, float high_val)
     return value;
 }
 
+void base_control_set_ros_func(base_control_get_time_milisec get_time)
+{
+    get_time_milis = get_time;
+}
+
 void base_control_ros_setup(void)
 {
     nh.initNode();                      /*!< Init ROS node handle */
@@ -132,8 +138,8 @@ void base_control_ros_setup(void)
     nh.advertise(joint_states_pub);     /*!< Register the publisher to "joint_states" topic */
 
     tf_broadcaster.init(nh);            /*!< Init TransformBroadcaster */
-    base_control_init_odom();                         /*!< Init odometry value */
-    base_control_init_joint_state();                  /*!< Init joint state */
+    base_control_init_odom();           /*!< Init odometry value */
+    base_control_init_joint_state();    /*!< Init joint state */
 
     prev_update_time = millis();        /*!< Update time */
     setup_end = true;                   /*!< Flag for setup completed */

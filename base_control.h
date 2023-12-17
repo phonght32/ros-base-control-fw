@@ -65,6 +65,18 @@
 #define LINEAR          0                       /*!< Linear velocity index */
 #define ANGULAR         1                       /*!< Angular velocity index */
 
+typedef uint32_t (*base_control_get_time_milisec)(void);
+
+/*
+ * @brief   Set get time function for ROS.
+ *
+ * @note 	Function get time need to be assigned first.
+ *
+ * @param   get_time Function get time.
+ *
+ * @return  None.
+ */
+void base_control_set_ros_func(base_control_get_time_milisec get_time);
 
 /*
  * @brief   ROS setup node handle, rosserial connection, ...
