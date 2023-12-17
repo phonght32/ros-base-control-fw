@@ -447,8 +447,8 @@ err_code_t periph_resolver_init(periph_resolver_cfg_t cfg)
 		return err_ret;
 	}
 
-	resolver_set_mode(resolver_left_handle, 0);
-	resolver_set_mode(resolver_right_handle, 0);
+	resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_UP);
+	resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_UP);
 
 	resolver_start(resolver_left_handle);
 	resolver_start(resolver_right_handle);
