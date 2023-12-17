@@ -67,189 +67,203 @@
 
 
 /*
- * @brief   This function called when receive any message from "cmd_vel" topic.
- *          Geometry messages content linear and angular velocity.
- * @param   cmd_vel_msg Geometry message.
- * @return  None.
- */
-void commandVelocityCallback(const geometry_msgs::Twist& cmd_vel_msg);
-
-/*
- * @brief   This function called when receive any message from "reset" topic.
- * @param   reset_msg Reset message.
- * @return  None.
- */
-void resetCallback(const std_msgs::Empty &reset_msg);
-
-/*
- * @brief   Publish linear and angular velocity to "cmd_vel_motor" topic.
+ * @brief   ROS setup node handle, rosserial connection, ...
+ *
  * @param   None.
+ *
  * @return  None.
  */
-void publishCmdVelFromMotorMsg(void);
-
-/*
- * @brief   Publish IMU information.
- * @param   None.
- * @return  None.
- */
-void publishImuMsg(void);
-
-/*
- * @brief   Publish drive information.
- * @param   None.
- * @return  None.
- */
-void publishDriveInformation(void);
-
-/*
- * @brief   Get ROS time current.
- * @param   None.
- * @return  ROS time.
- */
-ros::Time rosNow(void);
-
-/*
- * @brief   Add microsecond to ROS time.
- * @param   t Ros time.
- * @param   _micros Time add.
- * @return  ROS time calibration.
- */
-ros::Time addMicros(ros::Time &t, uint32_t _micros);
-
-/*
- * @brief   Update variable (Odometry and IMU parameters).
- * @param   isConnected Check rosserial connect.
- * @return  None.
- */
-void updateVariable(bool isConnected);
-
-/*
- * @brief   Update motor information.
- * @param   left_tick
- * @pram    right_tick
- * @return  None.
- */
-void updateMotorInfo(int32_t left_tick, int32_t right_tick);
-
-/*
- * @brief   Update ROS time from system time.
- * @param   None.
- * @return  None.
- */
-void updateTime(void);
-
-/*
- * @brief   Update Odometry.
- * @param   None.
- * @return  None.
- */
-void updateOdometry(void);
-
-/*
- * @brief   Update Joint.
- * @param   None.
- * @return  None.
- */
-void updateJoint(void);
-
-/*
- * @brief   Update JointStates.
- * @param   None.
- * @return  None.
- */
-void updateJointStates(void);
-
-/*
- * @brief   Update Transform.
- * @param   odom_tf Geometry messages content tf information.
- * @return  None.
- */
-void updateTF(geometry_msgs::TransformStamped& odom_tf);
-
-/*
- * @brief   Update IMU bias value.
- * @param   isConnected Check rosserial connect.
- * @return  None.
- */
-void updateGyroCali(bool isConnected);
-
-/*
- * @brief   Update goal velocity to control motor.
- * @param   None.
- * @return  None.
- */
-void updateGoalVelocity(void);
-
-/*
- * @brief   Update TFPrefix.
- * @param   None.
- * @return  None.
- */
-void updateTFPrefix(bool isConnected);
+void base_control_ros_setup(void);
 
 /*
  * @brief   Initialize Odometry.
+ *
  * @param   None.
+ *
  * @return  None.
  */
-void initOdom(void);
+void base_control_init_odom(void);
 
 /*
  * @brief   Initialize JointStates
+ *
  * @param   None.
+ *
  * @return  None.
  */
-void initJointStates(void);
+void base_control_init_joint_state(void);
 
 /*
- * @brief   Calculate Odometry.
- * @param   diff_time
- * @return  None.
- */
-bool calcOdometry(float diff_time);
-
-/*
- * @brief   Send Log messages.
+ * @brief   Get ROS time current.
+ *
  * @param   None.
- * @return  None.
+ *
+ * @return  ROS time.
  */
-void sendLogMsg(void);
+ros::Time base_control_get_ros_time(void);
 
 /*
- * @brief   Wait rosserial connection.
+ * @brief   Add microsecond to ROS time.
+ *
+ * @param   t Ros time.
+ * @param   _micros Time add.
+ *
+ * @return  ROS time calibration.
+ */
+ros::Time base_control_ros_time_add_microsec(ros::Time &t, uint32_t _micros);
+
+/*
+ * @brief   Update ROS time from system time.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_update_time(void);
+
+/*
+ * @brief   Update variable (Odometry and IMU parameters).
+ *
  * @param   isConnected Check rosserial connect.
+ *
  * @return  None.
  */
-void waitForSerialLink(bool isConnected);
+void base_control_update_variable(bool isConnected);
 
 /*
- * @brief   ROS setup node handle, rosserial connection, ...
- * @param   None.
+ * @brief   Update TFPrefix.
+ *
+ * @param   isConnected Check rosserial connect.
+ *
  * @return  None.
  */
-void ros_setup(void);
+void base_control_update_tf_prefix(bool isConnected);
+
+/*
+ * @brief   Update goal velocity to control motor.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_update_goal_vel(void);
+
+/*
+ * @brief   Update Odometry.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_update_odom(void);
+
+/*
+ * @brief   Update Joint.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_update_joint(void);
+
+/*
+ * @brief   Update JointStates.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_update_joint_state(void);
+
+/*
+ * @brief   Update Transform.
+ *
+ * @param   odom_tf Geometry messages content tf information.
+ *
+ * @return  None.
+ */
+void base_control_update_tf(geometry_msgs::TransformStamped& odom_tf);
+
+/*
+ * @brief   Update IMU bias value.
+ *
+ * @param   isConnected Check rosserial connect.
+ *
+ * @return  None.
+ */
+void base_control_update_gyro_cali(bool isConnected);
+
+/*
+ * @brief   Update motor information.
+ *
+ * @param   left_tick
+ * @pram    right_tick
+ *
+ * @return  None.
+ */
+void base_control_update_motor_info(int32_t left_tick, int32_t right_tick);
 
 /*
  * @brief   Control robot adapt to linear and angular velocity.
+ *
  * @param   goal_vel Linear and angular velocity.
+ *
  * @return  None.
  */
-void controlMotor(float *goal_vel);
+void base_control_set_vel(float *goal_vel);
 
 /*
  * @brief   Get motor speed.
+ *
  * @param   vel Pointer data.
+ *
  * @return  None.
  */
-void getMotorSpeed(float *vel);
+void base_control_get_motor_speed(float *vel);
 
 /*
- * @brief   Get quaternion components.
+ * @brief   Publish linear and angular velocity to "cmd_vel_motor" topic.
+ *
  * @param   None.
- * @return  IMU message type sensor_msg::Imu.
+ *
+ * @return  None.
  */
-sensor_msgs::Imu getIMU(void);
+void base_control_publish_cmdvel_from_motor_msg(void);
 
+/*
+ * @brief   Publish drive information.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_publish_drive_info(void);
+
+/*
+ * @brief   Publish IMU information.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_publish_imu_msg(void);
+
+/*
+ * @brief   Wait rosserial connection.
+ *
+ * @param   isConnected Check rosserial connect.
+ *
+ * @return  None.
+ */
+void base_control_wait_serial_link(bool isConnected);
+
+/*
+ * @brief   Send Log messages.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_send_log_msg(void);
 
 #endif /* _ROBOT_ROS_CONFIG_H_ */
