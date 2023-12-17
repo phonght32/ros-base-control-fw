@@ -44,8 +44,18 @@ sensor_msgs::Imu base_control_get_imu(void);
 
 base_control_get_time_milisec get_time_milis = NULL;
 
+ros::NodeHandle base_control_node_handle;               /*!< ROS node handle */
+
+uint32_t base_control_time_update[10];
+
+float zero_velocity[WHEEL_NUM] = {0.0, 0.0};            /*!< Velocity to stop motor */
+float goal_velocity[WHEEL_NUM] = {0.0, 0.0};            /*!< Velocity to control motor */
+float goal_velocity_from_cmd[WHEEL_NUM] = {0.0, 0.0};   /*!< Velocity receive from "cmd_vel" topic */
+float goal_velocity_from_motor[WHEEL_NUM] = {0.0, 0.0}; /*!< Velocity read from encoder */
+
+
 char log_msg[100];                  /*!< Log message buffer */
-ros::NodeHandle nh;                 /*!< ROS node handle */
+
 ros::Time current_time;             /*!< ROS current time */
 uint32_t current_offset;            /*!< ROS current time offset */
 
@@ -77,18 +87,11 @@ ros::Publisher joint_states_pub("joint_states", &joint_states);
 geometry_msgs::TransformStamped odom_tf;
 tf::TransformBroadcaster tf_broadcaster;
 
-static uint32_t tTime[10];
-
 bool init_encoder = true;
 int32_t last_diff_tick[WHEEL_NUM] = {0, 0};
 float last_rad[WHEEL_NUM] = {0.0, 0.0};
 
 float  last_velocity[WHEEL_NUM]  = {0.0, 0.0};
-
-float zero_velocity[WHEEL_NUM] = {0.0, 0.0};            /*!< Velocity to stop motor                 */
-float goal_velocity[WHEEL_NUM] = {0.0, 0.0};            /*!< Velocity to control motor              */
-float goal_velocity_from_cmd[WHEEL_NUM] = {0.0, 0.0};   /*!< Velocity receive from "cmd_vel" topic  */
-float goal_velocity_from_motor[WHEEL_NUM] = {0.0, 0.0}; /*!< Velocity read from encoder             */
 
 unsigned long prev_update_time;
 float odom_pose[3];
@@ -127,17 +130,17 @@ void base_control_set_ros_func(base_control_get_time_milisec get_time)
 
 void base_control_ros_setup(void)
 {
-    nh.initNode();                      /*!< Init ROS node handle */
+	base_control_node_handle.initNode();                      /*!< Init ROS node handle */
 
-    nh.subscribe(cmd_vel_sub);          /*!< Subscribe "cmd_vel" topic to get motor cmd */
-    nh.subscribe(reset_sub);            /*!< Subscribe "reset" topic */
+	base_control_node_handle.subscribe(cmd_vel_sub);          /*!< Subscribe "cmd_vel" topic to get motor cmd */
+	base_control_node_handle.subscribe(reset_sub);            /*!< Subscribe "reset" topic */
 
-    nh.advertise(imu_pub);              /*!< Register the publisher to "imu" topic */
-    nh.advertise(cmd_vel_motor_pub);    /*!< Register the publisher to "cmd_vel_motor" topic */
-    nh.advertise(odom_pub);             /*!< Register the publisher to "odom" topic */
-    nh.advertise(joint_states_pub);     /*!< Register the publisher to "joint_states" topic */
+	base_control_node_handle.advertise(imu_pub);              /*!< Register the publisher to "imu" topic */
+	base_control_node_handle.advertise(cmd_vel_motor_pub);    /*!< Register the publisher to "cmd_vel_motor" topic */
+	base_control_node_handle.advertise(odom_pub);             /*!< Register the publisher to "odom" topic */
+	base_control_node_handle.advertise(joint_states_pub);     /*!< Register the publisher to "joint_states" topic */
 
-    tf_broadcaster.init(nh);            /*!< Init TransformBroadcaster */
+    tf_broadcaster.init(base_control_node_handle);            /*!< Init TransformBroadcaster */
     base_control_init_odom();           /*!< Init odometry value */
     base_control_init_joint_state();    /*!< Init joint state */
 
@@ -148,7 +151,7 @@ void base_control_ros_setup(void)
 void base_control_update_time(void)
 {
     current_offset = millis();
-    current_time = nh.now();
+    current_time = base_control_node_handle.now();
 }
 
 void base_control_update_variable(bool isConnected)
@@ -180,7 +183,7 @@ void base_control_update_tf_prefix(bool isConnected)
     {
         if (isChecked == false)
         {
-            nh.getParam("~tf_prefix", &get_tf_prefix);
+        	base_control_node_handle.getParam("~tf_prefix", &get_tf_prefix);
 
             if (!strcmp(get_tf_prefix, ""))
             {
@@ -206,13 +209,13 @@ void base_control_update_tf_prefix(bool isConnected)
             }
 
             sprintf(log_msg, "Setup TF on Odometry [%s]", odom_header_frame_id);
-            nh.loginfo(log_msg);
+            base_control_node_handle.loginfo(log_msg);
 
             sprintf(log_msg, "Setup TF on IMU [%s]", imu_frame_id);
-            nh.loginfo(log_msg);
+            base_control_node_handle.loginfo(log_msg);
 
             sprintf(log_msg, "Setup TF on JointState [%s]", joint_state_header_frame_id);
-            nh.loginfo(log_msg);
+            base_control_node_handle.loginfo(log_msg);
 
             isChecked = true;
         }
@@ -252,7 +255,7 @@ void base_control_get_motor_speed(float *vel)
     goal_velocity_from_motor[ANGULAR] = goal_velocity_from_cmd[ANGULAR];
 }
 
-void base_control_pub_cmdvel_from_motor_msg(void)
+void base_control_publish_cmdvel_from_motor_msg(void)
 {
     /* Get motor velocity */
     cmd_vel_motor_msg.linear.x = goal_velocity_from_motor[LINEAR];
@@ -264,8 +267,6 @@ void base_control_pub_cmdvel_from_motor_msg(void)
 
 void base_control_update_motor_info(int32_t left_tick, int32_t right_tick)
 {
-    int32_t current_tick = 0;
-
     if (init_encoder)
     {
         for (int index = 0; index < WHEEL_NUM; index++)
@@ -349,18 +350,18 @@ void base_control_send_log_msg(void)
 {
     static bool log_flag = false;
 
-    if (nh.connected())
+    if (base_control_node_handle.connected())
     {
         if (log_flag == false)
         {
             sprintf(log_msg, "--------------------------");
-            nh.loginfo(log_msg);
+            base_control_node_handle.loginfo(log_msg);
 
             sprintf(log_msg, "Connected to openSTM32-Board");
-            nh.loginfo(log_msg);
+            base_control_node_handle.loginfo(log_msg);
 
             sprintf(log_msg, "--------------------------");
-            nh.loginfo(log_msg);
+            base_control_node_handle.loginfo(log_msg);
 
             log_flag = true;
         }
@@ -382,7 +383,7 @@ void base_control_callback_cmd_vel(const geometry_msgs::Twist& cmd_vel_msg)
     goal_velocity_from_cmd[ANGULAR] = constrain(goal_velocity_from_cmd[ANGULAR], MIN_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
 
     /* Update time */
-    tTime[CONTROL_MOTOR_TIMEOUT_TIME_INDEX] = millis();
+    base_control_time_update[CONTROL_MOTOR_TIMEOUT_TIME_INDEX] = millis();
 }
 
 void base_control_callback_reset(const std_msgs::Empty &reset_msg)
@@ -392,17 +393,17 @@ void base_control_callback_reset(const std_msgs::Empty &reset_msg)
     (void)(reset_msg);
 
     sprintf(log_msg, "Start Calibration of Gyro");
-    nh.loginfo(log_msg);
+    base_control_node_handle.loginfo(log_msg);
 
     base_control_init_odom();
 
     sprintf(log_msg, "Reset Odometry");
-    nh.loginfo(log_msg);
+    base_control_node_handle.loginfo(log_msg);
 }
 
 ros::Time base_control_get_ros_time(void)
 {
-    return nh.now();
+    return base_control_node_handle.now();
 }
 
 ros::Time base_control_ros_time_add_microsec(ros::Time & t, uint32_t _micros)
@@ -467,17 +468,17 @@ void base_control_update_gyro_cali(bool isConnected)
 
     (void)(isConnected);
 
-    if (nh.connected())
+    if (base_control_node_handle.connected())
     {
         if (isEnded == false)
         {
             sprintf(log_msg, "Start Calibration of Gyro");
-            nh.loginfo(log_msg);
+            base_control_node_handle.loginfo(log_msg);
 
             //calibrationGyro();
 
             sprintf(log_msg, "Calibration End");
-            nh.loginfo(log_msg);
+            base_control_node_handle.loginfo(log_msg);
 
             isEnded = true;
         }

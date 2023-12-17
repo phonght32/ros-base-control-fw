@@ -40,6 +40,8 @@
 #include "tf/transform_broadcaster.h"
 #include "nav_msgs/Odometry.h"
 
+#include "stdint.h"
+
 /* Time update index */
 #define CONTROL_MOTOR_TIME_INDEX                0       /*!< Time index control motor */
 #define CMD_VEL_PUBLISH_TIME_INDEX              1       /*!< Time index publish velocity */
@@ -64,6 +66,13 @@
 
 #define LINEAR          0                       /*!< Linear velocity index */
 #define ANGULAR         1                       /*!< Angular velocity index */
+
+extern ros::NodeHandle base_control_node_handle;
+extern uint32_t base_control_time_update[10];
+extern float zero_velocity[WHEEL_NUM];
+extern float goal_velocity[WHEEL_NUM];
+extern float goal_velocity_from_cmd[WHEEL_NUM];
+extern float goal_velocity_from_motor[WHEEL_NUM];
 
 typedef uint32_t (*base_control_get_time_milisec)(void);
 
