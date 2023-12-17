@@ -31,11 +31,6 @@ extern "C" {
 // #define USE_MPU6500
 // #define USE_AK8963
 
-#define PI                  3.14159265359
-
-/* Convert constant */
-#define DEG2RAD(x)      (x * PI / 180.0f)     /*!< Convert from degree to radian (PI/180) */
-#define RAD2DEG(x)      (x * 180.0f / PI)     /*!< convert from radian to degree (180/PI) */
 
 /* Step motor direction index */
 #define MOTORLEFT_DIR_FORWARD       0
@@ -57,6 +52,12 @@ extern "C" {
 #define MICROSTEP_DIV               8           /*!< Step driver microstep divider */
 #define NUM_PULSE_PER_ROUND         200         /*!< The number of pulse per round of motor */
 
+#define PI                  3.14159265359
+
+/* Convert constant */
+#define DEG2RAD(x)      (x * PI / 180.0f)     /*!< Convert from degree to radian (PI/180) */
+#define RAD2DEG(x)      (x * 180.0f / PI)     /*!< convert from radian to degree (180/PI) */
+
 /*
  *  Convert from velocity (m/s) to frequency (Hz) for motor driver.
  *
@@ -66,6 +67,9 @@ extern "C" {
  *
  */
 #define VEL2FREQ        ((NUM_PULSE_PER_ROUND*MICROSTEP_DIV)/(2*PI*WHEEL_RADIUS))
+
+/* Convert motor tick to angular in radian */
+#define TICK2RAD        360.0f/(NUM_PULSE_PER_ROUND*MICROSTEP_DIV)*PI/180.0f
 
 
 #ifdef __cplusplus
