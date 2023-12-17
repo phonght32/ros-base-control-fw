@@ -1,4 +1,4 @@
-#include "hw_define.h"
+#include "base_control_hw_define.h"
 #include "periph.h"
 #include "imu.h"
 #include "madgwick/imu_madgwick.h"

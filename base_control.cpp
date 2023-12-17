@@ -2,7 +2,7 @@
 #include "stdbool.h"
 
 #include "periph/periph.h"
-#include "hw_define.h"
+#include "base_control_hw_define.h"
 #include "base_control.h"
 
 /*
