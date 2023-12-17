@@ -109,6 +109,32 @@ err_code_t periph_imu_init(periph_imu_cfg_t cfg);
 err_code_t periph_imu_filter_init(periph_imu_filter_cfg_t cfg);
 
 /*
+ * @brief  	Get scaled accelerometer.
+ *
+ * @param   accel_x Accelerometer x axis.
+ * @param   accel_y Accelerometer y axis.
+ * @param   accel_z Accelerometer z axis.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t periph_imu_get_accel(float *accel_x, float *accel_y, float* accel_z);
+
+/*
+ * @brief  	Get scaled gyroscope.
+ *
+ * @param   gyro_x Gyroscope x axis.
+ * @param   gyro_y Gyroscope y axis.
+ * @param   gyro_z Gyroscope z axis.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t periph_imu_get_gyro(float *gyro_x, float *gyro_y, float* gyro_z);
+
+/*
  * @brief  	Update quaternion.
  *
  * @param   None.

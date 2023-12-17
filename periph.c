@@ -108,6 +108,43 @@ err_code_t periph_imu_filter_init(periph_imu_filter_cfg_t cfg)
 	return ERR_CODE_SUCCESS;
 }
 
+err_code_t periph_imu_get_accel(float *accel_x, float *accel_y, float* accel_z)
+{
+	if (imu_madgwick_handle == NULL)
+	{
+		return ERR_CODE_NULL_PTR;
+	}
+
+	err_code_t err_ret;
+
+	err_ret = imu_get_accel_scale(imu_handle, accel_x, accel_y, accel_z);
+	if (err_ret != ERR_CODE_SUCCESS)
+	{
+		return err_ret;
+	}
+
+	return ERR_CODE_SUCCESS;
+}
+
+err_code_t periph_imu_get_gyro(float *gyro_x, float *gyro_y, float* gyro_z)
+{
+	if (imu_madgwick_handle == NULL)
+	{
+		return ERR_CODE_NULL_PTR;
+	}
+
+	err_code_t err_ret;
+
+	err_ret = imu_get_gyro_scale(imu_handle, gyro_x, gyro_y, gyro_z);
+	if (err_ret != ERR_CODE_SUCCESS)
+	{
+		return err_ret;
+	}
+
+
+	return ERR_CODE_SUCCESS;
+}
+
 err_code_t periph_imu_update_quat(void)
 {
 	if ((imu_handle == NULL) || (imu_madgwick_handle == NULL))
