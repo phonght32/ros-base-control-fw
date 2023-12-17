@@ -27,10 +27,6 @@
 extern "C" {
 #endif
 
-#define USE_MPU6050
-// #define USE_MPU6500
-// #define USE_AK8963
-
 
 /* Step motor direction index */
 #define MOTORLEFT_DIR_FORWARD       0
