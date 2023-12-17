@@ -72,16 +72,23 @@ err_code_t base_control_imu_init(base_control_imu_cfg_t cfg)
 
 	imu_auto_calib(imu_handle);
 
+	return ERR_CODE_SUCCESS;
+}
+
+err_code_t base_control_imu_filter_init(base_control_imu_filter_cfg_t cfg)
+{
 	/* Config madgwick filter */
+	err_code_t err_ret;
+	
 	imu_madgwick_handle = imu_madgwick_init();
 	if (imu_madgwick_handle == NULL)
 	{
-		return err_ret;
+		return ERR_CODE_NULL_PTR;
 	}
 
 	imu_madgwick_cfg_t imu_madgwick_cfg = {
-		.beta = 0.1f,
-		.sample_freq = 7000.0f
+		.beta = cfg.beta,
+		.sample_freq = cfg.sample_freq
 	};
 	err_ret = imu_madgwick_set_config(imu_madgwick_handle, imu_madgwick_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
@@ -97,7 +104,6 @@ err_code_t base_control_imu_init(base_control_imu_cfg_t cfg)
 
 	return ERR_CODE_SUCCESS;
 }
-
 
 err_code_t base_control_imu_update_quat(void)
 {
@@ -139,18 +145,12 @@ err_code_t base_control_imu_get_quat(float *q0, float *q1, float *q2, float* q3)
 	}
 
 	err_code_t err_ret;
-	imu_madgwick_quat_t quat_data;
 
-	err_ret = imu_madgwick_get_quaternion(imu_madgwick_handle, &quat_data);
+	err_ret = imu_madgwick_get_quaternion(imu_madgwick_handle, q0, q1, q2, q3);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
-
-	*q0 = quat_data.q0;
-	*q1 = quat_data.q1;
-	*q2 = quat_data.q2;
-	*q3 = quat_data.q3;
 
 	return ERR_CODE_SUCCESS;
 }

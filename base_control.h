@@ -28,20 +28,29 @@ extern "C" {
 #endif
 
 #include "imu.h"
+#include "madgwick/imu_madgwick.h"
 #include "stepmotor.h"
 #include "resolver.h"
 
 #include "err_code.h"
 
+#define DEFAULT_MADGWICK_BETA  				0.1f
+#define DEFAULT_MADGWICK_SAMPLE_FREQ  		6000.0f
+
 typedef struct {
 	imu_func_read_bytes 		mpu6050_read_bytes;			/*!< MPU6050 read bytes */
 	imu_func_write_bytes 		mpu6050_write_bytes;		/*!< MPU6050 write bytes */
 	imu_func_read_bytes     	ak8963_read_bytes;			/*!< AK8963 write bytes */
-    imu_func_write_bytes    	ak8963_write_bytes;			/*!< AK8963 write bytes */
-    imu_func_read_bytes     	mpu6500_read_bytes;			/*!< MPU6500 write bytes */
-    imu_func_write_bytes    	mpu6500_write_bytes;		/*!< MPU6500 write bytes */
+	imu_func_write_bytes    	ak8963_write_bytes;			/*!< AK8963 write bytes */
+	imu_func_read_bytes     	mpu6500_read_bytes;			/*!< MPU6500 write bytes */
+	imu_func_write_bytes    	mpu6500_write_bytes;		/*!< MPU6500 write bytes */
 	imu_func_delay 				func_delay;					/*!< IMU delay function */
 } base_control_imu_cfg_t;
+
+typedef struct {
+	float beta;
+	float sample_freq;
+} base_control_imu_filter_cfg_t;
 
 typedef struct {
 	stepmotor_func_set_pwm_duty leftmotor_set_pwm_duty;		/*!< Function set PWM duty */
@@ -72,7 +81,7 @@ typedef struct {
 } base_control_resolver_cfg_t;
 
 /*
- * @brief  	Initialize IMU and filter.
+ * @brief  	Initialize IMU.
  *
  * @param   cfg Configuration structure.
  *
@@ -81,6 +90,17 @@ typedef struct {
  *      - Others:   		Fail.
  */
 err_code_t base_control_imu_init(base_control_imu_cfg_t cfg);
+
+/*
+ * @brief  	Initialize IMU filter.
+ *
+ * @param   cfg Configuration structure.
+ *
+ * @return
+ *      - ERR_CODE_SUCCESS:	Success.
+ *      - Others:   		Fail.
+ */
+err_code_t base_control_imu_filter_init(base_control_imu_filter_cfg_t cfg);
 
 /*
  * @brief  	Update quaternion.
