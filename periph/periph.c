@@ -22,6 +22,8 @@
 #define RESOLVER_COUNTER_MODE_UP  			0
 #define RESOLVER_COUNTER_MODE_DOWN  		1
 
+#define STEPMOTOR_PWM_DUTY  				50
+
 imu_handle_t imu_handle = NULL;
 imu_madgwick_handle_t imu_madgwick_handle = NULL;
 stepmotor_handle_t motor_left_handle = NULL;
@@ -82,7 +84,7 @@ err_code_t periph_imu_filter_init(periph_imu_filter_cfg_t cfg)
 {
 	/* Config madgwick filter */
 	err_code_t err_ret;
-	
+
 	imu_madgwick_handle = imu_madgwick_init();
 	if (imu_madgwick_handle == NULL)
 	{
@@ -256,6 +258,16 @@ err_code_t periph_motor_init(periph_motor_cfg_t cfg)
 	{
 		return err_ret;
 	}
+
+	stepmotor_set_pwm_duty(motor_left_handle, STEPMOTOR_PWM_DUTY);
+	stepmotor_set_pwm_freq(motor_left_handle, 0);
+	stepmotor_set_dir(motor_left_handle, MOTORLEFT_DIR_FORWARD);
+	stepmotor_start(motor_left_handle);
+
+	stepmotor_set_pwm_duty(motor_right_handle, STEPMOTOR_PWM_DUTY);
+	stepmotor_set_pwm_freq(motor_right_handle, 0);
+	stepmotor_set_dir(motor_right_handle, MOTORRIGHT_DIR_FORWARD);
+	stepmotor_start(motor_right_handle);
 
 	return ERR_CODE_SUCCESS;
 }
@@ -434,6 +446,12 @@ err_code_t periph_resolver_init(periph_resolver_cfg_t cfg)
 	{
 		return err_ret;
 	}
+
+	resolver_set_mode(resolver_left_handle, 0);
+	resolver_set_mode(resolver_right_handle, 0);
+
+	resolver_start(resolver_left_handle);
+	resolver_start(resolver_right_handle);
 
 	return ERR_CODE_SUCCESS;
 }
