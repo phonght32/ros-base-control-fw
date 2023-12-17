@@ -4,6 +4,21 @@
 #include "madgwick/imu_madgwick.h"
 #include "stepmotor.h"
 
+#define DEFAULT_ACCEL_BIAS_X				0
+#define DEFAULT_ACCEL_BIAS_Y				0
+#define DEFAULT_ACCEL_BIAS_Z				0
+
+#define DEFAULT_GYRO_BIAS_X					0
+#define DEFAULT_GYRO_BIAS_Y					0
+#define DEFAULT_GYRO_BIAS_Z					0
+
+#define DEFAULT_MAG_HARD_BIAS_X				0
+#define DEFAULT_MAG_HARD_BIAS_Y				0
+#define DEFAULT_MAG_HARD_BIAS_Z				0
+#define DEFAULT_MAG_SOFT_BIAS_X				0
+#define DEFAULT_MAG_SOFT_BIAS_Y				0
+#define DEFAULT_MAG_SOFT_BIAS_Z				0
+
 imu_handle_t imu_handle = NULL;
 imu_madgwick_handle_t imu_madgwick_handle = NULL;
 stepmotor_handle_t leftmotor_handle = NULL;
@@ -23,19 +38,19 @@ err_code_t base_control_imu_init(base_control_imu_cfg_t cfg)
 	err_code_t err_ret;
 
 	imu_cfg_t imu_cfg = {
-		.accel_bias_x = cfg.accel_bias_x,
-		.accel_bias_y = cfg.accel_bias_y,
-		.accel_bias_z = cfg.accel_bias_z,
-		.gyro_bias_x = cfg.gyro_bias_x,
-		.gyro_bias_y = cfg.gyro_bias_y,
-		.gyro_bias_z = cfg.gyro_bias_z,
-		.mag_hard_iron_bias_x = cfg.mag_hard_iron_bias_x,
-		.mag_hard_iron_bias_y = cfg.mag_hard_iron_bias_y,
-		.mag_hard_iron_bias_z = cfg.mag_hard_iron_bias_z,
-		.mag_soft_iron_bias_x = cfg.mag_soft_iron_bias_x,
-		.mag_soft_iron_bias_y = cfg.mag_soft_iron_bias_y,
-		.mag_soft_iron_bias_z = cfg.mag_soft_iron_bias_z,
-		.func_delay = cfg.delay,
+		.accel_bias_x = DEFAULT_ACCEL_BIAS_X,
+		.accel_bias_y = DEFAULT_ACCEL_BIAS_Y,
+		.accel_bias_z = DEFAULT_ACCEL_BIAS_Z,
+		.gyro_bias_x = DEFAULT_GYRO_BIAS_X,
+		.gyro_bias_y = DEFAULT_GYRO_BIAS_Y,
+		.gyro_bias_z = DEFAULT_GYRO_BIAS_Z,
+		.mag_hard_iron_bias_x = DEFAULT_MAG_HARD_BIAS_X,
+		.mag_hard_iron_bias_y = DEFAULT_MAG_HARD_BIAS_Y,
+		.mag_hard_iron_bias_z = DEFAULT_MAG_HARD_BIAS_Z,
+		.mag_soft_iron_bias_x = DEFAULT_MAG_SOFT_BIAS_X,
+		.mag_soft_iron_bias_y = DEFAULT_MAG_SOFT_BIAS_Y,
+		.mag_soft_iron_bias_z = DEFAULT_MAG_SOFT_BIAS_Z,
+		.func_delay = cfg.func_delay,
 		.mpu6050_read_bytes = cfg.mpu6050_read_bytes,
 		.mpu6050_write_bytes = cfg.mpu6050_write_bytes,
 		.ak8963_read_bytes = cfg.ak8963_read_bytes,
