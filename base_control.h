@@ -58,15 +58,13 @@ typedef struct {
 	resolver_func_stop 			left_resolver_stop;					/*!< Function stop resolver */
 	resolver_func_set_counter 	left_resolver_set_counter;			/*!< Function set counter */
 	resolver_func_get_counter 	left_resolver_get_counter;			/*!< Function get counter */
-	resolver_func_set_mode_up	left_resolver_set_mode_up;			/*!< Function set mode counter up */
-	resolver_func_set_mode_down left_resolver_set_mode_down;		/*!< Function set mode counter down */
+	resolver_func_set_mode		left_resolver_set_mode;				/*!< Function set mode counter up */
 	uint32_t 					right_resolver_max_reload;          /*!< Max reload value */
 	resolver_func_start 		right_resolver_start;				/*!< Function start resolver */
 	resolver_func_stop 			right_resolver_stop;				/*!< Function stop resolver */
 	resolver_func_set_counter 	right_resolver_set_counter;			/*!< Function set counter */
 	resolver_func_get_counter 	right_resolver_get_counter;			/*!< Function get counter */
-	resolver_func_set_mode_up	right_resolver_set_mode_up;			/*!< Function set mode counter up */
-	resolver_func_set_mode_down right_resolver_set_mode_down;		/*!< Function set mode counter down */
+	resolver_func_set_mode		right_resolver_set_mode;			/*!< Function set mode counter up */
 } base_control_resolver_cfg_t;
 
 /*

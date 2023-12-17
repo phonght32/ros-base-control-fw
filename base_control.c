@@ -246,13 +246,13 @@ err_code_t base_control_motor_left_set_speed(float speed)
 	if (speed < 0)
 	{
 		stepmotor_set_dir(leftmotor_handle, MOTORLEFT_DIR_BACKWARD);
-		resolver_set_mode_down(resolver_left_handle);
+		resolver_set_mode(resolver_left_handle, 1);
 		stepmotor_set_pwm_freq(leftmotor_handle, (uint32_t)(-speed * VEL2FREQ));
 	}
 	else
 	{
 		stepmotor_set_dir(leftmotor_handle, MOTORLEFT_DIR_FORWARD);
-		resolver_set_mode_up(resolver_left_handle);
+		resolver_set_mode(resolver_left_handle, 0);
 		stepmotor_set_pwm_freq(leftmotor_handle, (uint32_t)(speed * VEL2FREQ));
 	}
 
@@ -305,13 +305,13 @@ err_code_t base_control_motor_right_set_speed(float speed)
 	if (speed < 0)
 	{
 		stepmotor_set_dir(rightmotor_handle, MOTORLEFT_DIR_BACKWARD);
-		resolver_set_mode_down(resolver_right_handle);
+		resolver_set_mode(resolver_right_handle, 1);
 		stepmotor_set_pwm_freq(rightmotor_handle, (uint32_t)(-speed * VEL2FREQ));
 	}
 	else
 	{
 		stepmotor_set_dir(rightmotor_handle, MOTORLEFT_DIR_FORWARD);
-		resolver_set_mode_up(resolver_right_handle);
+		resolver_set_mode(resolver_right_handle, 0);
 		stepmotor_set_pwm_freq(rightmotor_handle, (uint32_t)(speed * VEL2FREQ));
 	}
 
@@ -335,8 +335,7 @@ err_code_t base_control_resolver_init(base_control_resolver_cfg_t cfg)
 		.stop = cfg.left_resolver_stop,
 		.set_counter = cfg.left_resolver_set_counter,
 		.get_counter = cfg.left_resolver_get_counter,
-		.set_mode_up = cfg.left_resolver_set_mode_up,
-		.set_mode_down = cfg.left_resolver_set_mode_down,
+		.set_mode = cfg.left_resolver_set_mode,
 	};
 	err_ret = resolver_set_config(resolver_left_handle, left_resolver_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
@@ -363,8 +362,7 @@ err_code_t base_control_resolver_init(base_control_resolver_cfg_t cfg)
 		.stop = cfg.right_resolver_stop,
 		.set_counter = cfg.right_resolver_set_counter,
 		.get_counter = cfg.right_resolver_get_counter,
-		.set_mode_up = cfg.right_resolver_set_mode_up,
-		.set_mode_down = cfg.right_resolver_set_mode_down,
+		.set_mode = cfg.right_resolver_set_mode,
 	};
 	err_ret = resolver_set_config(resolver_right_handle, right_resolver_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
