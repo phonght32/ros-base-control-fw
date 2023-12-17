@@ -24,8 +24,8 @@
 
 imu_handle_t imu_handle = NULL;
 imu_madgwick_handle_t imu_madgwick_handle = NULL;
-stepmotor_handle_t leftmotor_handle = NULL;
-stepmotor_handle_t rightmotor_handle = NULL;
+stepmotor_handle_t motor_left_handle = NULL;
+stepmotor_handle_t motor_right_handle = NULL;
 resolver_handle_t resolver_left_handle = NULL;
 resolver_handle_t resolver_right_handle = NULL;
 
@@ -163,8 +163,8 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
 	err_code_t err_ret;
 
 	/* Initialize left motor */
-	leftmotor_handle = stepmotor_init();
-	if (leftmotor_handle == NULL)
+	motor_left_handle = stepmotor_init();
+	if (motor_left_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
@@ -179,21 +179,21 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
 		.stop_pwm = cfg.leftmotor_stop_pwm,
 		.set_dir = cfg.leftmotor_set_dir
 	};
-	err_ret = stepmotor_set_config(leftmotor_handle, leftmotor_cfg);
+	err_ret = stepmotor_set_config(motor_left_handle, leftmotor_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
-	err_ret = stepmotor_config(leftmotor_handle);
+	err_ret = stepmotor_config(motor_left_handle);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
 	/* Initialize right motor */
-	rightmotor_handle = stepmotor_init();
-	if (rightmotor_handle == NULL)
+	motor_right_handle = stepmotor_init();
+	if (motor_right_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
@@ -208,13 +208,13 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
 		.stop_pwm = cfg.rightmotor_stop_pwm,
 		.set_dir = cfg.rightmotor_set_dir
 	};
-	err_ret = stepmotor_set_config(rightmotor_handle, rightmotor_cfg);
+	err_ret = stepmotor_set_config(motor_right_handle, rightmotor_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
-	err_ret = stepmotor_config(rightmotor_handle);
+	err_ret = stepmotor_config(motor_right_handle);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
@@ -225,14 +225,14 @@ err_code_t base_control_motor_init(base_control_motor_cfg_t cfg)
 
 err_code_t base_control_motor_left_start(void)
 {
-	if (leftmotor_handle == NULL)
+	if (motor_left_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
 	err_code_t err;
 
-	err = stepmotor_start(leftmotor_handle);
+	err = stepmotor_start(motor_left_handle);
 	if (err != ERR_CODE_SUCCESS)
 	{
 		return err;
@@ -242,14 +242,14 @@ err_code_t base_control_motor_left_start(void)
 }
 err_code_t base_control_motor_left_stop(void)
 {
-	if (leftmotor_handle == NULL)
+	if (motor_left_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
 	err_code_t err;
 
-	err = stepmotor_stop(leftmotor_handle);
+	err = stepmotor_stop(motor_left_handle);
 	if (err != ERR_CODE_SUCCESS)
 	{
 		return err;
@@ -260,22 +260,22 @@ err_code_t base_control_motor_left_stop(void)
 
 err_code_t base_control_motor_left_set_speed(float speed)
 {
-	if (leftmotor_handle == NULL)
+	if (motor_left_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
 	if (speed < 0)
 	{
-		stepmotor_set_dir(leftmotor_handle, MOTORLEFT_DIR_BACKWARD);
+		stepmotor_set_dir(motor_left_handle, MOTORLEFT_DIR_BACKWARD);
 		resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_DOWN);
-		stepmotor_set_pwm_freq(leftmotor_handle, (uint32_t)(-speed * VEL2FREQ));
+		stepmotor_set_pwm_freq(motor_left_handle, (uint32_t)(-speed * VEL2FREQ));
 	}
 	else
 	{
-		stepmotor_set_dir(leftmotor_handle, MOTORLEFT_DIR_FORWARD);
+		stepmotor_set_dir(motor_left_handle, MOTORLEFT_DIR_FORWARD);
 		resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_UP);
-		stepmotor_set_pwm_freq(leftmotor_handle, (uint32_t)(speed * VEL2FREQ));
+		stepmotor_set_pwm_freq(motor_left_handle, (uint32_t)(speed * VEL2FREQ));
 	}
 
 	return ERR_CODE_SUCCESS;
@@ -283,14 +283,14 @@ err_code_t base_control_motor_left_set_speed(float speed)
 
 err_code_t base_control_motor_right_start(void)
 {
-	if (rightmotor_handle == NULL)
+	if (motor_right_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
 	err_code_t err;
 
-	err = stepmotor_start(rightmotor_handle);
+	err = stepmotor_start(motor_right_handle);
 	if (err != ERR_CODE_SUCCESS)
 	{
 		return err;
@@ -301,14 +301,14 @@ err_code_t base_control_motor_right_start(void)
 
 err_code_t base_control_motor_right_stop(void)
 {
-	if (rightmotor_handle == NULL)
+	if (motor_right_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
 	err_code_t err;
 
-	err = stepmotor_stop(rightmotor_handle);
+	err = stepmotor_stop(motor_right_handle);
 	if (err != ERR_CODE_SUCCESS)
 	{
 		return err;
@@ -319,22 +319,22 @@ err_code_t base_control_motor_right_stop(void)
 
 err_code_t base_control_motor_right_set_speed(float speed)
 {
-	if (rightmotor_handle == NULL)
+	if (motor_right_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
 	if (speed < 0)
 	{
-		stepmotor_set_dir(rightmotor_handle, MOTORLEFT_DIR_BACKWARD);
+		stepmotor_set_dir(motor_right_handle, MOTORLEFT_DIR_BACKWARD);
 		resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_DOWN);
-		stepmotor_set_pwm_freq(rightmotor_handle, (uint32_t)(-speed * VEL2FREQ));
+		stepmotor_set_pwm_freq(motor_right_handle, (uint32_t)(-speed * VEL2FREQ));
 	}
 	else
 	{
-		stepmotor_set_dir(rightmotor_handle, MOTORLEFT_DIR_FORWARD);
+		stepmotor_set_dir(motor_right_handle, MOTORLEFT_DIR_FORWARD);
 		resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_UP);
-		stepmotor_set_pwm_freq(rightmotor_handle, (uint32_t)(speed * VEL2FREQ));
+		stepmotor_set_pwm_freq(motor_right_handle, (uint32_t)(speed * VEL2FREQ));
 	}
 
 	return ERR_CODE_SUCCESS;
