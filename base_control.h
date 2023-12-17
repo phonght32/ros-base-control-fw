@@ -40,8 +40,6 @@
 #include "tf/transform_broadcaster.h"
 #include "nav_msgs/Odometry.h"
 
-#include "stdint.h"
-
 /* Time update index */
 #define CONTROL_MOTOR_TIME_INDEX                0       /*!< Time index control motor */
 #define CMD_VEL_PUBLISH_TIME_INDEX              1       /*!< Time index publish velocity */
