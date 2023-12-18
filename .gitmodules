@@ -7,3 +7,6 @@
 [submodule "stepmotor"]
 	path = stepmotor
 	url = git@github.com:phonght32/stepmotor.git
+[submodule "encoder"]
+	path = encoder
+	url = git@github.com:phonght32/encoder.git
