@@ -64,13 +64,14 @@
 
 #define LINEAR          0                       /*!< Linear velocity index */
 #define ANGULAR         1                       /*!< Angular velocity index */
+#define NUM_OF_VEL_TYPE 2 
 
 extern ros::NodeHandle base_control_node_handle;
 extern uint32_t base_control_time_update[10];
-extern float zero_velocity[WHEEL_NUM];
-extern float goal_velocity[WHEEL_NUM];
-extern float goal_velocity_from_cmd[WHEEL_NUM];
-extern float goal_velocity_from_motor[WHEEL_NUM];
+extern float zero_velocity[NUM_OF_VEL_TYPE];
+extern float goal_velocity[NUM_OF_VEL_TYPE];
+extern float goal_velocity_from_cmd[NUM_OF_VEL_TYPE];
+extern float goal_velocity_from_motor[NUM_OF_VEL_TYPE];
 
 typedef uint32_t (*base_control_get_time_milisec)(void);
 

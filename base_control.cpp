@@ -48,10 +48,10 @@ ros::NodeHandle base_control_node_handle;               /*!< ROS node handle */
 
 uint32_t base_control_time_update[10];
 
-float zero_velocity[WHEEL_NUM] = {0.0, 0.0};            /*!< Velocity to stop motor */
-float goal_velocity[WHEEL_NUM] = {0.0, 0.0};            /*!< Velocity to control motor */
-float goal_velocity_from_cmd[WHEEL_NUM] = {0.0, 0.0};   /*!< Velocity receive from "cmd_vel" topic */
-float goal_velocity_from_motor[WHEEL_NUM] = {0.0, 0.0}; /*!< Velocity read from encoder */
+float zero_velocity[NUM_OF_VEL_TYPE] = {0.0, 0.0};            /*!< Velocity to stop motor */
+float goal_velocity[NUM_OF_VEL_TYPE] = {0.0, 0.0};            /*!< Velocity to control motor */
+float goal_velocity_from_cmd[NUM_OF_VEL_TYPE] = {0.0, 0.0};   /*!< Velocity receive from "cmd_vel" topic */
+float goal_velocity_from_motor[NUM_OF_VEL_TYPE] = {0.0, 0.0}; /*!< Velocity read from encoder */
 
 
 char log_msg[100];                  /*!< Log message buffer */
