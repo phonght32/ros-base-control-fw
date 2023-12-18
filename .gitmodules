@@ -7,6 +7,3 @@
 [submodule "stepmotor"]
 	path = stepmotor
 	url = git@github.com:phonght32/stepmotor.git
-[submodule "resolver"]
-	path = resolver
-	url = git@github.com:phonght32/resolver.git
