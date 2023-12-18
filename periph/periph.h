@@ -30,7 +30,7 @@ extern "C" {
 #include "imu.h"
 #include "madgwick/imu_madgwick.h"
 #include "stepmotor.h"
-#include "resolver.h"
+#include "encoder.h"
 
 #include "err_code.h"
 
@@ -72,19 +72,19 @@ typedef struct {
 } periph_motor_cfg_t;
 
 typedef struct {
-	uint32_t 					left_resolver_max_reload;           /*!< Max reload value */
-	resolver_func_start 		left_resolver_start;				/*!< Function start resolver */
-	resolver_func_stop 			left_resolver_stop;					/*!< Function stop resolver */
-	resolver_func_set_counter 	left_resolver_set_counter;			/*!< Function set counter */
-	resolver_func_get_counter 	left_resolver_get_counter;			/*!< Function get counter */
-	resolver_func_set_mode		left_resolver_set_mode;				/*!< Function set mode counter up */
-	uint32_t 					right_resolver_max_reload;          /*!< Max reload value */
-	resolver_func_start 		right_resolver_start;				/*!< Function start resolver */
-	resolver_func_stop 			right_resolver_stop;				/*!< Function stop resolver */
-	resolver_func_set_counter 	right_resolver_set_counter;			/*!< Function set counter */
-	resolver_func_get_counter 	right_resolver_get_counter;			/*!< Function get counter */
-	resolver_func_set_mode		right_resolver_set_mode;			/*!< Function set mode counter up */
-} periph_resolver_cfg_t;
+	uint32_t 					left_encoder_max_reload;           	/*!< Max reload value */
+	encoder_func_start 			left_encoder_start;					/*!< Function start encoder */
+	encoder_func_stop 			left_encoder_stop;					/*!< Function stop encoder */
+	encoder_func_set_counter 	left_encoder_set_counter;			/*!< Function set counter */
+	encoder_func_get_counter 	left_encoder_get_counter;			/*!< Function get counter */
+	encoder_func_set_mode		left_encoder_set_mode;				/*!< Function set mode counter up */
+	uint32_t 					right_encoder_max_reload;          	/*!< Max reload value */
+	encoder_func_start 			right_encoder_start;				/*!< Function start encoder */
+	encoder_func_stop 			right_encoder_stop;					/*!< Function stop encoder */
+	encoder_func_set_counter 	right_encoder_set_counter;			/*!< Function set counter */
+	encoder_func_get_counter 	right_encoder_get_counter;			/*!< Function get counter */
+	encoder_func_set_mode		right_encoder_set_mode;				/*!< Function set mode counter up */
+} periph_encoder_cfg_t;
 
 /*
  * @brief  	Initialize IMU.
@@ -237,7 +237,7 @@ err_code_t periph_motor_right_stop(void);
 err_code_t periph_motor_right_set_speed(float speed);
 
 /*
- * @brief  	Initialize resolver.
+ * @brief  	Initialize encoder.
  *
  * @param   cfg Configuration structure.
  *
@@ -245,10 +245,10 @@ err_code_t periph_motor_right_set_speed(float speed);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t periph_resolver_init(periph_resolver_cfg_t cfg);
+err_code_t periph_encoder_init(periph_encoder_cfg_t cfg);
 
 /*
- * @brief  	Get left resolver tick.
+ * @brief  	Get left encoder tick.
  *
  * @param   left_tick Left tick value.
  *
@@ -256,10 +256,10 @@ err_code_t periph_resolver_init(periph_resolver_cfg_t cfg);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t periph_resolver_left_get_tick(int32_t *tick);
+err_code_t periph_encoder_left_get_tick(int32_t *tick);
 
 /*
- * @brief  	Get right resolver tick.
+ * @brief  	Get right encoder tick.
  *
  * @param   tick Right tick value.
  *
@@ -267,7 +267,7 @@ err_code_t periph_resolver_left_get_tick(int32_t *tick);
  *      - ERR_CODE_SUCCESS:	Success.
  *      - Others:   		Fail.
  */
-err_code_t periph_resolver_right_get_tick(int32_t *tick);
+err_code_t periph_encoder_right_get_tick(int32_t *tick);
 
 
 #ifdef __cplusplus

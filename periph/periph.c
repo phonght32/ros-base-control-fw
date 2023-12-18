@@ -19,8 +19,8 @@
 #define DEFAULT_MAG_SOFT_BIAS_Y				0
 #define DEFAULT_MAG_SOFT_BIAS_Z				0
 
-#define RESOLVER_COUNTER_MODE_UP  			0
-#define RESOLVER_COUNTER_MODE_DOWN  		1
+#define ENCODER_COUNTER_MODE_UP  			0
+#define ENCODER_COUNTER_MODE_DOWN  			1
 
 #define STEPMOTOR_PWM_DUTY  				50
 
@@ -28,8 +28,8 @@ imu_handle_t imu_handle = NULL;
 imu_madgwick_handle_t imu_madgwick_handle = NULL;
 stepmotor_handle_t motor_left_handle = NULL;
 stepmotor_handle_t motor_right_handle = NULL;
-resolver_handle_t resolver_left_handle = NULL;
-resolver_handle_t resolver_right_handle = NULL;
+encoder_handle_t encoder_left_handle = NULL;
+encoder_handle_t encoder_right_handle = NULL;
 
 err_code_t periph_imu_init(periph_imu_cfg_t cfg)
 {
@@ -317,14 +317,14 @@ err_code_t periph_motor_left_set_speed(float speed)
 	if (speed < 0)
 	{
 		stepmotor_set_dir(motor_left_handle, MOTORLEFT_DIR_BACKWARD);
-		resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_DOWN);
+		encoder_set_mode(encoder_left_handle, ENCODER_COUNTER_MODE_DOWN);
 		stepmotor_set_pwm_freq(motor_left_handle, (uint32_t)(-speed * VEL2FREQ));
 		stepmotor_set_pwm_duty(motor_left_handle, STEPMOTOR_PWM_DUTY);
 	}
 	else
 	{
 		stepmotor_set_dir(motor_left_handle, MOTORLEFT_DIR_FORWARD);
-		resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_UP);
+		encoder_set_mode(encoder_left_handle, ENCODER_COUNTER_MODE_UP);
 		stepmotor_set_pwm_freq(motor_left_handle, (uint32_t)(speed * VEL2FREQ));
 		stepmotor_set_pwm_duty(motor_left_handle, STEPMOTOR_PWM_DUTY);
 	}
@@ -378,14 +378,14 @@ err_code_t periph_motor_right_set_speed(float speed)
 	if (speed < 0)
 	{
 		stepmotor_set_dir(motor_right_handle, MOTORLEFT_DIR_BACKWARD);
-		resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_DOWN);
+		encoder_set_mode(encoder_right_handle, ENCODER_COUNTER_MODE_DOWN);
 		stepmotor_set_pwm_freq(motor_right_handle, (uint32_t)(-speed * VEL2FREQ));
 		stepmotor_set_pwm_duty(motor_right_handle, STEPMOTOR_PWM_DUTY);
 	}
 	else
 	{
 		stepmotor_set_dir(motor_right_handle, MOTORLEFT_DIR_FORWARD);
-		resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_UP);
+		encoder_set_mode(encoder_right_handle, ENCODER_COUNTER_MODE_UP);
 		stepmotor_set_pwm_freq(motor_right_handle, (uint32_t)(speed * VEL2FREQ));
 		stepmotor_set_pwm_duty(motor_right_handle, STEPMOTOR_PWM_DUTY);
 	}
@@ -393,101 +393,101 @@ err_code_t periph_motor_right_set_speed(float speed)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t periph_resolver_init(periph_resolver_cfg_t cfg)
+err_code_t periph_encoder_init(periph_encoder_cfg_t cfg)
 {
 	err_code_t err_ret;
 
-	/* Initialize left resolver */
-	resolver_left_handle = resolver_init();
-	if (resolver_left_handle == NULL)
+	/* Initialize left encoder */
+	encoder_left_handle = encoder_init();
+	if (encoder_left_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
-	resolver_cfg_t left_resolver_cfg = {
-		.max_reload = cfg.left_resolver_max_reload,
-		.start = cfg.left_resolver_start,
-		.stop = cfg.left_resolver_stop,
-		.set_counter = cfg.left_resolver_set_counter,
-		.get_counter = cfg.left_resolver_get_counter,
-		.set_mode = cfg.left_resolver_set_mode,
+	encoder_cfg_t left_encoder_cfg = {
+		.max_reload = cfg.left_encoder_max_reload,
+		.start = cfg.left_encoder_start,
+		.stop = cfg.left_encoder_stop,
+		.set_counter = cfg.left_encoder_set_counter,
+		.get_counter = cfg.left_encoder_get_counter,
+		.set_mode = cfg.left_encoder_set_mode,
 	};
-	err_ret = resolver_set_config(resolver_left_handle, left_resolver_cfg);
+	err_ret = encoder_set_config(encoder_left_handle, left_encoder_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
-	err_ret = resolver_config(resolver_left_handle);
+	err_ret = encoder_config(encoder_left_handle);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
-	/* Initialize right resolver */
-	resolver_right_handle = resolver_init();
-	if (resolver_right_handle == NULL)
+	/* Initialize right encoder */
+	encoder_right_handle = encoder_init();
+	if (encoder_right_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
-	resolver_cfg_t right_resolver_cfg = {
-		.max_reload = cfg.right_resolver_max_reload,
-		.start = cfg.right_resolver_start,
-		.stop = cfg.right_resolver_stop,
-		.set_counter = cfg.right_resolver_set_counter,
-		.get_counter = cfg.right_resolver_get_counter,
-		.set_mode = cfg.right_resolver_set_mode,
+	encoder_cfg_t right_encoder_cfg = {
+		.max_reload = cfg.right_encoder_max_reload,
+		.start = cfg.right_encoder_start,
+		.stop = cfg.right_encoder_stop,
+		.set_counter = cfg.right_encoder_set_counter,
+		.get_counter = cfg.right_encoder_get_counter,
+		.set_mode = cfg.right_encoder_set_mode,
 	};
-	err_ret = resolver_set_config(resolver_right_handle, right_resolver_cfg);
+	err_ret = encoder_set_config(encoder_right_handle, right_encoder_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
-	err_ret = resolver_config(resolver_right_handle);
+	err_ret = encoder_config(encoder_right_handle);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
-	resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_UP);
-	resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_UP);
+	encoder_set_mode(encoder_left_handle, ENCODER_COUNTER_MODE_UP);
+	encoder_set_mode(encoder_right_handle, ENCODER_COUNTER_MODE_UP);
 
-	resolver_start(resolver_left_handle);
-	resolver_start(resolver_right_handle);
+	encoder_start(encoder_left_handle);
+	encoder_start(encoder_right_handle);
 
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t periph_resolver_left_get_tick(int32_t *tick)
+err_code_t periph_encoder_left_get_tick(int32_t *tick)
 {
-	if (resolver_left_handle == NULL)
+	if (encoder_left_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
 	uint32_t temp;
 
-	resolver_get_value(resolver_left_handle, &temp);
-	resolver_set_value(resolver_left_handle, NUM_PULSE_PER_ROUND * MICROSTEP_DIV / 2);
+	encoder_get_value(encoder_left_handle, &temp);
+	encoder_set_value(encoder_left_handle, NUM_PULSE_PER_ROUND * MICROSTEP_DIV / 2);
 
 	*tick = temp - NUM_PULSE_PER_ROUND * MICROSTEP_DIV / 2;
 
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t periph_resolver_right_get_tick(int32_t *tick)
+err_code_t periph_encoder_right_get_tick(int32_t *tick)
 {
-	if (resolver_right_handle == NULL)
+	if (encoder_right_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
 	uint32_t temp;
 
-	resolver_get_value(resolver_right_handle, &temp);
-	resolver_set_value(resolver_right_handle, NUM_PULSE_PER_ROUND * MICROSTEP_DIV / 2);
+	encoder_get_value(encoder_right_handle, &temp);
+	encoder_set_value(encoder_right_handle, NUM_PULSE_PER_ROUND * MICROSTEP_DIV / 2);
 
 	*tick = temp - NUM_PULSE_PER_ROUND * MICROSTEP_DIV / 2;
 
