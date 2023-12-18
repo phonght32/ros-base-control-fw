@@ -259,13 +259,13 @@ err_code_t periph_motor_init(periph_motor_cfg_t cfg)
 		return err_ret;
 	}
 
-	stepmotor_set_pwm_duty(motor_left_handle, STEPMOTOR_PWM_DUTY);
 	stepmotor_set_pwm_freq(motor_left_handle, 0);
+	stepmotor_set_pwm_duty(motor_left_handle, STEPMOTOR_PWM_DUTY);
 	stepmotor_set_dir(motor_left_handle, MOTORLEFT_DIR_FORWARD);
 	stepmotor_start(motor_left_handle);
 
-	stepmotor_set_pwm_duty(motor_right_handle, STEPMOTOR_PWM_DUTY);
 	stepmotor_set_pwm_freq(motor_right_handle, 0);
+	stepmotor_set_pwm_duty(motor_right_handle, STEPMOTOR_PWM_DUTY);
 	stepmotor_set_dir(motor_right_handle, MOTORRIGHT_DIR_FORWARD);
 	stepmotor_start(motor_right_handle);
 
@@ -319,12 +319,14 @@ err_code_t periph_motor_left_set_speed(float speed)
 		stepmotor_set_dir(motor_left_handle, MOTORLEFT_DIR_BACKWARD);
 		resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_DOWN);
 		stepmotor_set_pwm_freq(motor_left_handle, (uint32_t)(-speed * VEL2FREQ));
+		stepmotor_set_pwm_duty(motor_left_handle, STEPMOTOR_PWM_DUTY);
 	}
 	else
 	{
 		stepmotor_set_dir(motor_left_handle, MOTORLEFT_DIR_FORWARD);
 		resolver_set_mode(resolver_left_handle, RESOLVER_COUNTER_MODE_UP);
 		stepmotor_set_pwm_freq(motor_left_handle, (uint32_t)(speed * VEL2FREQ));
+		stepmotor_set_pwm_duty(motor_left_handle, STEPMOTOR_PWM_DUTY);
 	}
 
 	return ERR_CODE_SUCCESS;
@@ -378,12 +380,14 @@ err_code_t periph_motor_right_set_speed(float speed)
 		stepmotor_set_dir(motor_right_handle, MOTORLEFT_DIR_BACKWARD);
 		resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_DOWN);
 		stepmotor_set_pwm_freq(motor_right_handle, (uint32_t)(-speed * VEL2FREQ));
+		stepmotor_set_pwm_duty(motor_right_handle, STEPMOTOR_PWM_DUTY);
 	}
 	else
 	{
 		stepmotor_set_dir(motor_right_handle, MOTORLEFT_DIR_FORWARD);
 		resolver_set_mode(resolver_right_handle, RESOLVER_COUNTER_MODE_UP);
 		stepmotor_set_pwm_freq(motor_right_handle, (uint32_t)(speed * VEL2FREQ));
+		stepmotor_set_pwm_duty(motor_right_handle, STEPMOTOR_PWM_DUTY);
 	}
 
 	return ERR_CODE_SUCCESS;
