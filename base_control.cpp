@@ -108,8 +108,6 @@ unsigned long prev_update_time;
 float odom_pose[3];
 float odom_vel[3];
 
-bool setup_end        = false;
-
 uint32_t millis(void)
 {
     return get_time_milis();
@@ -155,7 +153,6 @@ void base_control_ros_setup(void)
     base_control_init_joint_state();    /*!< Init joint state */
 
     prev_update_time = millis();        /*!< Update time */
-    setup_end = true;                   /*!< Flag for setup completed */
 }
 
 bool base_control_connect_status(void)
