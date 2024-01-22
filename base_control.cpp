@@ -22,6 +22,14 @@
 #include "base_control_hw_define.h"
 #include "base_control.h"
 
+#define ROS_TOPIC_IMU               "imu"
+#define ROS_TOPIC_JOINT_STATES      "joint_states"
+#define ROS_TOPIC_ODOM              "odom"
+#define ROS_TOPIC_RESET             "reset"
+#define ROS_TOPIC_CMD_VEL           "cmd_vel"
+#define ROS_TOPIC_CMD_VEL_MOTOR     "cmd_vel_motor"
+
+
 /* Linear & Angular velocity index */
 #define WHEEL_NUM       2                       /*!< Num wheel */
 
@@ -72,20 +80,20 @@ char imu_frame_id[30];
 
 char joint_state_header_frame_id[30];
 
-ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub("cmd_vel", base_control_callback_cmd_vel);
-ros::Subscriber<std_msgs::Empty> reset_sub("reset", base_control_callback_reset);
+ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub(ROS_TOPIC_CMD_VEL, base_control_callback_cmd_vel);
+ros::Subscriber<std_msgs::Empty> reset_sub(ROS_TOPIC_RESET, base_control_callback_reset);
 
 sensor_msgs::Imu imu_msg;
-ros::Publisher imu_pub("imu", &imu_msg);
+ros::Publisher imu_pub(ROS_TOPIC_IMU, &imu_msg);
 
 geometry_msgs::Twist cmd_vel_motor_msg;
-ros::Publisher cmd_vel_motor_pub("cmd_vel_motor", &cmd_vel_motor_msg);
+ros::Publisher cmd_vel_motor_pub(ROS_TOPIC_CMD_VEL_MOTOR, &cmd_vel_motor_msg);
 
 nav_msgs::Odometry odom;
-ros::Publisher odom_pub("odom", &odom);
+ros::Publisher odom_pub(ROS_TOPIC_ODOM, &odom);
 
 sensor_msgs::JointState joint_states;
-ros::Publisher joint_states_pub("joint_states", &joint_states);
+ros::Publisher joint_states_pub(ROS_TOPIC_JOINT_STATES, &joint_states);
 
 geometry_msgs::TransformStamped odom_tf;
 tf::TransformBroadcaster tf_broadcaster;
