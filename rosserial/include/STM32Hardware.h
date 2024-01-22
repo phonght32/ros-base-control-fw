@@ -1,127 +1,60 @@
-/*
- * Software License Agreement (BSD License)
- *
- * Copyright (c) 2018, Kenta Yonekura (a.k.a. yoneken)
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *  * Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  * Redistributions in binary form must reproduce the above
- *    copyright notice, this list of conditions and the following
- *    disclaimer in the documentation and/or other materials provided
- *    with the distribution.
- *  * Neither the name of Willow Garage, Inc. nor the names of its
- *    contributors may be used to endorse or promote prducts derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+// MIT License
 
-#ifndef ROS_STM32_HARDWARE_H_
-#define ROS_STM32_HARDWARE_H_
+// Copyright (c) 2020 phonght32
 
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_uart.h"
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 
-extern "C" UART_HandleTypeDef huart4;
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
-#define tbuflen 512
+#ifndef _STM32HARDWARE_H_
+#define _STM32HARDWARE_H_
 
-class STM32Hardware {
-  protected:
-    UART_HandleTypeDef *huart;
+#include "SerialClass.h"
 
-    const static uint16_t rbuflen = 512;
-    uint8_t rbuf[rbuflen];
-    uint32_t rind;
-    inline uint32_t getRdmaInd(void){ return (rbuflen - __HAL_DMA_GET_COUNTER(huart->hdmarx)) & (rbuflen - 1); }
+class STM32Hardware
+{
+public:
+    STM32Hardware():com(&serial)
+    {
 
-//    const static uint16_t tbuflen = 512;
-    uint8_t tbuf[tbuflen];
-    uint32_t twind, tfind;
-
-  public:
-    STM32Hardware():
-      huart(&huart4), rind(0), twind(0), tfind(0){
     }
 
-    STM32Hardware(UART_HandleTypeDef *huart_):
-      huart(huart_), rind(0), twind(0), tfind(0){
+    void init()
+    {
+        com->init();
     }
 
-    void init(){
-      reset_rbuf();
+    int read()
+    {
+        return com->read();
     }
 
-    void reset_rbuf(void){
-      HAL_UART_Receive_DMA(huart, rbuf, rbuflen);
+    void write(uint8_t* data, int length)
+    {
+        com->write(data, length);
     }
 
-    int read(){
-      int c = -1;
-      if(rind != getRdmaInd()){
-        c = rbuf[rind++];
-        rind &= rbuflen - 1;
-      }
-      return c;
+    unsigned long time()
+    {
+        return HAL_GetTick();
     }
 
-    void flush(void){
-      static bool mutex = false;
-
-      if((huart->gState == HAL_UART_STATE_READY) && !mutex){
-        mutex = true;
-
-        if(twind != tfind){
-          uint16_t len = 0;
-		  if(tfind < twind){
-			len = twind - tfind;
-			HAL_UART_Transmit_DMA(huart, &(tbuf[tfind]), len);
-		  }else{
-			len = tbuflen - tfind;
-			HAL_UART_Transmit_DMA(huart, &(tbuf[tfind]), len);
-			HAL_UART_Transmit_DMA(huart, tbuf, twind);
-		  }
-          tfind = twind;
-        }
-        mutex = false;
-      }
-    }
-
-    void write(uint8_t* data, int length){
-      int n = length;
-      n = n <= tbuflen ? n : tbuflen;
-
-      int n_tail = n <= tbuflen - twind ? n : tbuflen - twind;
-      memcpy(&(tbuf[twind]), data, n_tail);
-      twind = (twind + n) & (tbuflen - 1);
-
-      if(n != n_tail){
-        memcpy(tbuf, &(data[n_tail]), n - n_tail);
-      }
-
-      flush();
-    }
-
-    unsigned long time(){ return HAL_GetTick();; }
-
-  protected:
+protected:
+    SerialClass* com;
 };
 
 #endif
