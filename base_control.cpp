@@ -58,56 +58,49 @@ void base_control_callback_reset(const std_msgs::Empty &reset_msg);
 
 base_control_get_time_milisec get_time_milis = NULL;
 
-ros::NodeHandle RosNodeHandle;                      /*!< ROS node handle */
-
-ros::Time RosCurrentTime;                           /*!< ROS current time */
-uint32_t RosCurrentTimeOffset;                      /*!< ROS current time offset */
-
 uint32_t base_control_time_update[10];
+
+ros::NodeHandle RosNodeHandle;                          /*!< ROS node handle */
+ros::Time Ros_CurrentTime;                              /*!< ROS current time */
+uint32_t Ros_CurrentTimeOffset;                         /*!< ROS current time offset */
+unsigned long Ros_PrevUpdateTime;                       /*!< ROS previous update time */
+char Ros_LogBuffer[100];                                /*!< ROS log message buffer */
+
+bool BaseControl_InitEncoder = true;                    /*!< Base control initialize encoder flag */
+float BaseControl_OdomPose[3];
+float BaseControl_OdomVel[3];
+
+char odom_header_frame_id[30];
+char odom_child_frame_id[30];
+char imu_frame_id[30];
+char joint_state_header_frame_id[30];
+
+sensor_msgs::Imu imu_msg;                           /*!< ROS IMU message */
+geometry_msgs::Twist cmd_vel_motor_msg;             /*!< ROS command velocity message */
+nav_msgs::Odometry odom;                            /*!< ROS odometry message */
+sensor_msgs::JointState joint_states;               /*!< ROS joint states message */
+geometry_msgs::TransformStamped odom_tf;            /*!< ROS transform stamped message */
+tf::TransformBroadcaster tf_broadcaster;            /*!< ROS tf broadcaster message */
+
+ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub(ROS_TOPIC_CMD_VEL, base_control_callback_cmd_vel);
+ros::Subscriber<std_msgs::Empty> reset_sub(ROS_TOPIC_RESET, base_control_callback_reset);
+
+ros::Publisher imu_pub(ROS_TOPIC_IMU, &imu_msg);
+ros::Publisher cmd_vel_motor_pub(ROS_TOPIC_CMD_VEL_MOTOR, &cmd_vel_motor_msg);
+ros::Publisher odom_pub(ROS_TOPIC_ODOM, &odom);
+ros::Publisher joint_states_pub(ROS_TOPIC_JOINT_STATES, &joint_states);
+
+char get_prefix[10];
+char *get_tf_prefix = get_prefix;
 
 float goal_velocity[2] = {0.0, 0.0};                /*!< Velocity to control motor */
 float goal_velocity_from_cmd[2] = {0.0, 0.0};       /*!< Velocity receive from "cmd_vel" topic */
 float goal_velocity_from_motor[2] = {0.0, 0.0};     /*!< Velocity read from encoder */
 
-char log_msg[100];                                  /*!< Log message buffer */
-
-char get_prefix[10];
-char *get_tf_prefix = get_prefix;
-
-char odom_header_frame_id[30];
-char odom_child_frame_id[30];
-
-char imu_frame_id[30];
-
-char joint_state_header_frame_id[30];
-
-ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub(ROS_TOPIC_CMD_VEL, base_control_callback_cmd_vel);
-ros::Subscriber<std_msgs::Empty> reset_sub(ROS_TOPIC_RESET, base_control_callback_reset);
-
-sensor_msgs::Imu imu_msg;
-ros::Publisher imu_pub(ROS_TOPIC_IMU, &imu_msg);
-
-geometry_msgs::Twist cmd_vel_motor_msg;
-ros::Publisher cmd_vel_motor_pub(ROS_TOPIC_CMD_VEL_MOTOR, &cmd_vel_motor_msg);
-
-nav_msgs::Odometry odom;
-ros::Publisher odom_pub(ROS_TOPIC_ODOM, &odom);
-
-sensor_msgs::JointState joint_states;
-ros::Publisher joint_states_pub(ROS_TOPIC_JOINT_STATES, &joint_states);
-
-geometry_msgs::TransformStamped odom_tf;
-tf::TransformBroadcaster tf_broadcaster;
-
-bool init_encoder = true;
-int32_t last_diff_tick[WHEEL_NUM] = {0, 0};
+int32_t BaseControl_LastDiffTick[WHEEL_NUM] = {0, 0};   /*!< Base control  */
 float last_rad[WHEEL_NUM] = {0.0, 0.0};
-
 float  last_velocity[WHEEL_NUM]  = {0.0, 0.0};
 
-unsigned long prev_update_time;
-float odom_pose[3];
-float odom_vel[3];
 
 uint32_t millis(void)
 {
@@ -139,21 +132,21 @@ void base_control_set_ros_func(base_control_get_time_milisec get_time)
 
 void base_control_ros_setup(void)
 {
-    RosNodeHandle.initNode();                      /*!< Init ROS node handle */
+    RosNodeHandle.initNode();                       /*!< Init ROS node handle */
 
-    RosNodeHandle.subscribe(cmd_vel_sub);          /*!< Subscribe "cmd_vel" topic to get motor cmd */
-    RosNodeHandle.subscribe(reset_sub);            /*!< Subscribe "reset" topic */
+    RosNodeHandle.subscribe(cmd_vel_sub);           /*!< Subscribe "cmd_vel" topic to get motor cmd */
+    RosNodeHandle.subscribe(reset_sub);             /*!< Subscribe "reset" topic */
 
-    RosNodeHandle.advertise(imu_pub);              /*!< Register the publisher to "imu" topic */
-    RosNodeHandle.advertise(cmd_vel_motor_pub);    /*!< Register the publisher to "cmd_vel_motor" topic */
-    RosNodeHandle.advertise(odom_pub);             /*!< Register the publisher to "odom" topic */
-    RosNodeHandle.advertise(joint_states_pub);     /*!< Register the publisher to "joint_states" topic */
+    RosNodeHandle.advertise(imu_pub);               /*!< Register the publisher to "imu" topic */
+    RosNodeHandle.advertise(cmd_vel_motor_pub);     /*!< Register the publisher to "cmd_vel_motor" topic */
+    RosNodeHandle.advertise(odom_pub);              /*!< Register the publisher to "odom" topic */
+    RosNodeHandle.advertise(joint_states_pub);      /*!< Register the publisher to "joint_states" topic */
 
-    tf_broadcaster.init(RosNodeHandle);            /*!< Init TransformBroadcaster */
-    base_control_init_odom();           /*!< Init odometry value */
-    base_control_init_joint_state();    /*!< Init joint state */
+    tf_broadcaster.init(RosNodeHandle);             /*!< Init TransformBroadcaster */
+    base_control_init_odom();                       /*!< Init odometry value */
+    base_control_init_joint_state();                /*!< Init joint state */
 
-    prev_update_time = millis();        /*!< Update time */
+    Ros_PrevUpdateTime = millis();                    /*!< Update time */
 }
 
 bool base_control_connect_status(void)
@@ -168,8 +161,8 @@ void base_control_spin_once(void)
 
 void base_control_update_time(void)
 {
-    RosCurrentTimeOffset = millis();
-    RosCurrentTime = RosNodeHandle.now();
+    Ros_CurrentTimeOffset = millis();
+    Ros_CurrentTime = RosNodeHandle.now();
 }
 
 void base_control_update_variable(bool isConnected)
@@ -291,33 +284,33 @@ void base_control_publish_cmdvel_from_motor_msg(void)
 
 void base_control_update_motor_info(int32_t left_tick, int32_t right_tick)
 {
-    if (init_encoder)
+    if (BaseControl_InitEncoder)
     {
         for (int index = 0; index < WHEEL_NUM; index++)
         {
-            last_diff_tick[index] = 0;
+            BaseControl_LastDiffTick[index] = 0;
             last_rad[index]       = 0.0f;
 
             last_velocity[index]  = 0.0f;
         }
 
-        init_encoder = false;
+        BaseControl_InitEncoder = false;
         return;
     }
 
-    last_diff_tick[LEFT] = left_tick;
-    last_rad[LEFT]       += TICK2RAD * (float)last_diff_tick[LEFT];
+    BaseControl_LastDiffTick[LEFT] = left_tick;
+    last_rad[LEFT]       += TICK2RAD * (float)BaseControl_LastDiffTick[LEFT];
 
-    last_diff_tick[RIGHT] = right_tick;
-    last_rad[RIGHT]       += TICK2RAD * (float)last_diff_tick[RIGHT];
+    BaseControl_LastDiffTick[RIGHT] = right_tick;
+    last_rad[RIGHT]       += TICK2RAD * (float)BaseControl_LastDiffTick[RIGHT];
 }
 
 void base_control_publish_drive_info(void)
 {
     /* Update time */
     unsigned long time_now = millis();
-    unsigned long step_time = time_now - prev_update_time;
-    prev_update_time = time_now;
+    unsigned long step_time = time_now - Ros_PrevUpdateTime;
+    Ros_PrevUpdateTime = time_now;
     ros::Time stamp_now = base_control_get_ros_time();
 
     /* Calculate odometry */
@@ -378,14 +371,14 @@ void base_control_send_log_msg(void)
     {
         if (log_flag == false)
         {
-            sprintf(log_msg, "--------------------------");
-            RosNodeHandle.loginfo(log_msg);
+            sprintf(Ros_LogBuffer, "--------------------------");
+            RosNodeHandle.loginfo(Ros_LogBuffer);
 
-            sprintf(log_msg, "Connected to openSTM32-Board");
-            RosNodeHandle.loginfo(log_msg);
+            sprintf(Ros_LogBuffer, "Connected to openSTM32-Board");
+            RosNodeHandle.loginfo(Ros_LogBuffer);
 
-            sprintf(log_msg, "--------------------------");
-            RosNodeHandle.loginfo(log_msg);
+            sprintf(Ros_LogBuffer, "--------------------------");
+            RosNodeHandle.loginfo(Ros_LogBuffer);
 
             log_flag = true;
         }
@@ -445,13 +438,13 @@ void base_control_update_odom(void)
     odom.header.frame_id = odom_header_frame_id;
     odom.child_frame_id  = odom_child_frame_id;
 
-    odom.pose.pose.position.x = odom_pose[0];
-    odom.pose.pose.position.y = odom_pose[1];
+    odom.pose.pose.position.x = BaseControl_OdomPose[0];
+    odom.pose.pose.position.y = BaseControl_OdomPose[1];
     odom.pose.pose.position.z = 0;
-    odom.pose.pose.orientation = tf::createQuaternionFromYaw(odom_pose[2]);
+    odom.pose.pose.orientation = tf::createQuaternionFromYaw(BaseControl_OdomPose[2]);
 
-    odom.twist.twist.linear.x  = odom_vel[0];
-    odom.twist.twist.angular.z = odom_vel[2];
+    odom.twist.twist.linear.x  = BaseControl_OdomVel[0];
+    odom.twist.twist.angular.z = BaseControl_OdomVel[2];
 }
 
 void base_control_update_joint_state(void)
@@ -515,12 +508,12 @@ void base_control_update_gyro_cali(bool isConnected)
 
 void base_control_init_odom(void)
 {
-    init_encoder = true;
+    BaseControl_InitEncoder = true;
 
     for (int index = 0; index < 3; index++)
     {
-        odom_pose[index] = 0.0;
-        odom_vel[index]  = 0.0;
+        BaseControl_OdomPose[index] = 0.0;
+        BaseControl_OdomVel[index]  = 0.0;
     }
 
     odom.pose.pose.position.x = 0.0;
@@ -567,8 +560,8 @@ bool base_control_calc_odom(float diff_time)
     if (step_time == 0)
         return false;
 
-    wheel_l = TICK2RAD * (float)last_diff_tick[LEFT];
-    wheel_r = TICK2RAD * (float)last_diff_tick[RIGHT];
+    wheel_l = TICK2RAD * (float)BaseControl_LastDiffTick[LEFT];
+    wheel_r = TICK2RAD * (float)BaseControl_LastDiffTick[RIGHT];
 
     if (isnan(wheel_l))
         wheel_l = 0.0f;
@@ -585,18 +578,18 @@ bool base_control_calc_odom(float diff_time)
     delta_theta = theta - last_theta;
 
     // compute odometric pose
-    odom_pose[0] += delta_s * cos(odom_pose[2] + (delta_theta / 2.0));
-    odom_pose[1] += delta_s * sin(odom_pose[2] + (delta_theta / 2.0));
-    odom_pose[2] += delta_theta;
+    BaseControl_OdomPose[0] += delta_s * cos(BaseControl_OdomPose[2] + (delta_theta / 2.0));
+    BaseControl_OdomPose[1] += delta_s * sin(BaseControl_OdomPose[2] + (delta_theta / 2.0));
+    BaseControl_OdomPose[2] += delta_theta;
 
     // compute odometric instantaneouse velocity
 
     v = delta_s / step_time;
     w = delta_theta / step_time;
 
-    odom_vel[0] = v;
-    odom_vel[1] = 0.0;
-    odom_vel[2] = w;
+    BaseControl_OdomVel[0] = v;
+    BaseControl_OdomVel[1] = 0.0;
+    BaseControl_OdomVel[2] = w;
 
     last_velocity[LEFT]  = wheel_l / step_time;
     last_velocity[RIGHT] = wheel_r / step_time;
