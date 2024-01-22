@@ -39,15 +39,6 @@
 #define DRIVE_INFORMATION_PUBLISH_FREQUENCY    5       	/*!< Frequency in Hz to publish drive information */
 #define DEBUG_LOG_FREQUENCY                    10       /*!< Frequency in Hz to send log debug messages */
 
-/* Linear & Angular velocity index */
-#define WHEEL_NUM       2                       /*!< Num wheel */
-
-#define LEFT            0                       /*!< Left wheel index */
-#define RIGHT           1                       /*!< Right wheel index */
-
-#define LINEAR          0                       /*!< Linear velocity index */
-#define ANGULAR         1                       /*!< Angular velocity index */
-
 typedef uint32_t (*base_control_get_time_milisec)(void);
 
 /*
@@ -143,22 +134,31 @@ void base_control_update_goal_vel(void);
 void base_control_update_motor_info(int32_t left_tick, int32_t right_tick);
 
 /*
- * @brief   Control robot adapt to linear and angular velocity.
+ * @brief   Set zero velocity to motor.
  *
- * @param   goal_vel Linear and angular velocity.
+ * @param   None.
  *
  * @return  None.
  */
-void base_control_set_vel(float *goal_vel);
+void base_control_set_zero_vel(void);
+
+/*
+ * @brief   Set goal velocity to motor.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_set_goal_vel(void);
 
 /*
  * @brief   Get motor speed.
  *
- * @param   vel Pointer data.
+ * @param   None.
  *
  * @return  None.
  */
-void base_control_get_motor_speed(float *vel);
+void base_control_get_motor_speed(void);
 
 /*
  * @brief   Publish linear and angular velocity to "cmd_vel_motor" topic.

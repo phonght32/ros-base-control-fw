@@ -22,6 +22,15 @@
 #include "base_control_hw_define.h"
 #include "base_control.h"
 
+/* Linear & Angular velocity index */
+#define WHEEL_NUM       2                       /*!< Num wheel */
+
+#define LEFT            0                       /*!< Left wheel index */
+#define RIGHT           1                       /*!< Right wheel index */
+
+#define LINEAR          0                       /*!< Linear velocity index */
+#define ANGULAR         1                       /*!< Angular velocity index */
+
 void base_control_init_joint_state(void);
 void base_control_init_odom(void);
 
@@ -44,10 +53,9 @@ base_control_get_time_milisec get_time_milis = NULL;
 ros::NodeHandle RosNodeHandle;
 uint32_t base_control_time_update[10];
 
-float zero_velocity[WHEEL_NUM] = {0.0, 0.0};                /*!< Velocity to stop motor */
-float goal_velocity[WHEEL_NUM] = {0.0, 0.0};                /*!< Velocity to control motor */
-float goal_velocity_from_cmd[WHEEL_NUM] = {0.0, 0.0};       /*!< Velocity receive from "cmd_vel" topic */
-float goal_velocity_from_motor[WHEEL_NUM] = {0.0, 0.0};     /*!< Velocity read from encoder */
+float goal_velocity[2] = {0.0, 0.0};                /*!< Velocity to control motor */
+float goal_velocity_from_cmd[2] = {0.0, 0.0};       /*!< Velocity receive from "cmd_vel" topic */
+float goal_velocity_from_motor[2] = {0.0, 0.0};     /*!< Velocity read from encoder */
 
 char log_msg[100];                  /*!< Log message buffer */
 
@@ -236,12 +244,18 @@ void base_control_update_goal_vel(void)
     goal_velocity[ANGULAR] = goal_velocity_from_cmd[ANGULAR];
 }
 
-void base_control_set_vel(float *goal_vel)
+void base_control_set_zero_vel(void)
+{
+    periph_motor_left_set_speed(0);
+    periph_motor_right_set_speed(0);
+}
+
+void base_control_set_goal_vel(void)
 {
     float wheel_velocity_cmd[2];
 
-    float lin_vel = goal_vel[LEFT];
-    float ang_vel = goal_vel[RIGHT];
+    float lin_vel = goal_velocity[LINEAR];
+    float ang_vel = goal_velocity[ANGULAR];
 
     wheel_velocity_cmd[LEFT]  = lin_vel - (ang_vel * WHEEL_SEPARATION / 2);
     wheel_velocity_cmd[RIGHT] = lin_vel + (ang_vel * WHEEL_SEPARATION / 2);
@@ -253,7 +267,7 @@ void base_control_set_vel(float *goal_vel)
     periph_motor_right_set_speed(wheel_velocity_cmd[RIGHT]);
 }
 
-void base_control_get_motor_speed(float *vel)
+void base_control_get_motor_speed(void)
 {
     goal_velocity_from_motor[LINEAR] = goal_velocity_from_cmd[LINEAR];
     goal_velocity_from_motor[ANGULAR] = goal_velocity_from_cmd[ANGULAR];
