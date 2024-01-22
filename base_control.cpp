@@ -197,7 +197,7 @@ void base_control_update_variable(bool isConnected)
 void base_control_update_tf_prefix(bool isConnected)
 {
     static bool isChecked = false;
-    char log_msg[50];
+    char log_msg[60];
 
     if (isConnected)
     {
