@@ -58,17 +58,18 @@ void base_control_callback_reset(const std_msgs::Empty &reset_msg);
 
 base_control_get_time_milisec get_time_milis = NULL;
 
-ros::NodeHandle RosNodeHandle;
+ros::NodeHandle RosNodeHandle;                      /*!< ROS node handle */
+
+ros::Time RosCurrentTime;                           /*!< ROS current time */
+uint32_t RosCurrentTimeOffset;                      /*!< ROS current time offset */
+
 uint32_t base_control_time_update[10];
 
 float goal_velocity[2] = {0.0, 0.0};                /*!< Velocity to control motor */
 float goal_velocity_from_cmd[2] = {0.0, 0.0};       /*!< Velocity receive from "cmd_vel" topic */
 float goal_velocity_from_motor[2] = {0.0, 0.0};     /*!< Velocity read from encoder */
 
-char log_msg[100];                  /*!< Log message buffer */
-
-ros::Time current_time;             /*!< ROS current time */
-uint32_t current_offset;            /*!< ROS current time offset */
+char log_msg[100];                                  /*!< Log message buffer */
 
 char get_prefix[10];
 char *get_tf_prefix = get_prefix;
@@ -167,8 +168,8 @@ void base_control_spin_once(void)
 
 void base_control_update_time(void)
 {
-    current_offset = millis();
-    current_time = RosNodeHandle.now();
+    RosCurrentTimeOffset = millis();
+    RosCurrentTime = RosNodeHandle.now();
 }
 
 void base_control_update_variable(bool isConnected)
