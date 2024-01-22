@@ -23,23 +23,6 @@
 #ifndef _ROBOT_ROS_CONFIG_H_
 #define _ROBOT_ROS_CONFIG_H_
 
-#include "ros.h"
-#include "ros/time.h"
-#include "std_msgs/Bool.h"
-#include "std_msgs/Empty.h"
-#include "std_msgs/Int32.h"
-#include "std_msgs/String.h"
-#include "std_msgs/UInt16.h"
-#include "sensor_msgs/Imu.h"
-#include "sensor_msgs/JointState.h"
-#include "sensor_msgs/BatteryState.h"
-#include "sensor_msgs/MagneticField.h"
-#include "geometry_msgs/Vector3.h"
-#include "geometry_msgs/Twist.h"
-#include "tf/tf.h"
-#include "tf/transform_broadcaster.h"
-#include "nav_msgs/Odometry.h"
-
 /* Time update index */
 #define CONTROL_MOTOR_TIME_INDEX                0       /*!< Time index control motor */
 #define CMD_VEL_PUBLISH_TIME_INDEX              1       /*!< Time index publish velocity */
@@ -64,21 +47,13 @@
 
 #define LINEAR          0                       /*!< Linear velocity index */
 #define ANGULAR         1                       /*!< Angular velocity index */
-#define NUM_OF_VEL_TYPE 2 
-
-extern ros::NodeHandle base_control_node_handle;
-extern uint32_t base_control_time_update[10];
-extern float zero_velocity[NUM_OF_VEL_TYPE];
-extern float goal_velocity[NUM_OF_VEL_TYPE];
-extern float goal_velocity_from_cmd[NUM_OF_VEL_TYPE];
-extern float goal_velocity_from_motor[NUM_OF_VEL_TYPE];
 
 typedef uint32_t (*base_control_get_time_milisec)(void);
 
 /*
- * @brief   Set get time function for ROS.
+ * @brief   Set functions for ROS.
  *
- * @note 	Function get time need to be assigned first.
+ * @note 	This function must be called first to assign hardware interface.
  *
  * @param   get_time Function get time.
  *
@@ -87,7 +62,13 @@ typedef uint32_t (*base_control_get_time_milisec)(void);
 void base_control_set_ros_func(base_control_get_time_milisec get_time);
 
 /*
- * @brief   ROS setup node handle, rosserial connection, ...
+ * @brief   This function do the following jobs as below:
+ *				- Initialize ROS node handle.
+ *				- Initialize transform broadcaster.
+ *				- Initialize odometry.
+ *				- Initialize joint state.
+ *				- Subscribe topic "cmd_vel" and "reset".
+ * 				- Advertise data to topic "imu", "cmd_vel_motor", "odom" and "joint_states".
  *
  * @param   None.
  *
@@ -96,41 +77,24 @@ void base_control_set_ros_func(base_control_get_time_milisec get_time);
 void base_control_ros_setup(void);
 
 /*
- * @brief   Initialize Odometry.
+ * @brief  	Get connect status between base control and ROS node.
+ *
+ * @param   None.
+ *
+ * @return
+ *      - TRUE:		Connected.
+ *      - FALSE: 	Not connected.
+ */
+bool base_control_connect_status(void);
+
+/*
+ * @brief  	Spin once to keep connnection.
  *
  * @param   None.
  *
  * @return  None.
  */
-void base_control_init_odom(void);
-
-/*
- * @brief   Initialize JointStates
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_init_joint_state(void);
-
-/*
- * @brief   Get ROS time current.
- *
- * @param   None.
- *
- * @return  ROS time.
- */
-ros::Time base_control_get_ros_time(void);
-
-/*
- * @brief   Add microsecond to ROS time.
- *
- * @param   t Ros time.
- * @param   _micros Time add.
- *
- * @return  ROS time calibration.
- */
-ros::Time base_control_ros_time_add_microsec(ros::Time &t, uint32_t _micros);
+void base_control_spin_once(void);
 
 /*
  * @brief   Update ROS time from system time.
@@ -167,51 +131,6 @@ void base_control_update_tf_prefix(bool isConnected);
  * @return  None.
  */
 void base_control_update_goal_vel(void);
-
-/*
- * @brief   Update Odometry.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_update_odom(void);
-
-/*
- * @brief   Update Joint.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_update_joint(void);
-
-/*
- * @brief   Update JointStates.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_update_joint_state(void);
-
-/*
- * @brief   Update Transform.
- *
- * @param   odom_tf Geometry messages content tf information.
- *
- * @return  None.
- */
-void base_control_update_tf(geometry_msgs::TransformStamped& odom_tf);
-
-/*
- * @brief   Update IMU bias value.
- *
- * @param   isConnected Check rosserial connect.
- *
- * @return  None.
- */
-void base_control_update_gyro_cali(bool isConnected);
 
 /*
  * @brief   Update motor information.

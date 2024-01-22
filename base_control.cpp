@@ -1,58 +1,53 @@
 #include "stdio.h"
 #include "stdbool.h"
 
+#include "ros.h"
+#include "ros/time.h"
+#include "std_msgs/Bool.h"
+#include "std_msgs/Empty.h"
+#include "std_msgs/Int32.h"
+#include "std_msgs/String.h"
+#include "std_msgs/UInt16.h"
+#include "sensor_msgs/Imu.h"
+#include "sensor_msgs/JointState.h"
+#include "sensor_msgs/BatteryState.h"
+#include "sensor_msgs/MagneticField.h"
+#include "geometry_msgs/Vector3.h"
+#include "geometry_msgs/Twist.h"
+#include "tf/tf.h"
+#include "tf/transform_broadcaster.h"
+#include "nav_msgs/Odometry.h"
+
 #include "periph/periph.h"
 #include "base_control_hw_define.h"
 #include "base_control.h"
 
-/*
- * @brief   This function called when receive any message from "cmd_vel" topic.
- *          Geometry messages content linear and angular velocity.
- *
- * @param   cmd_vel_msg Geometry message.
- *
- * @return  None.
- */
-void base_control_callback_cmd_vel(const geometry_msgs::Twist& cmd_vel_msg);
+void base_control_init_joint_state(void);
+void base_control_init_odom(void);
 
-/*
- * @brief   This function called when receive any message from "reset" topic.
- *
- * @param   reset_msg Reset message.
- *
- * @return  None.
- */
-void base_control_callback_reset(const std_msgs::Empty &reset_msg);
-
-/*
- * @brief   Calculate Odometry.
- *
- * @param   diff_time
- *
- * @return  None.
- */
+void base_control_update_gyro_cali(bool isConnected);
+void base_control_update_joint_state(void);
+void base_control_update_joint(void);
+void base_control_update_odom(void);
+void base_control_update_tf(geometry_msgs::TransformStamped& odom_tf);
 bool base_control_calc_odom(float diff_time);
-
-/*
- * @brief   Get quaternion components.
- *
- * @param   None.
- *
- * @return  IMU message type sensor_msg::Imu.
- */
 sensor_msgs::Imu base_control_get_imu(void);
+
+ros::Time base_control_ros_time_add_microsec(ros::Time &t, uint32_t _micros);
+ros::Time base_control_get_ros_time(void);
+
+void base_control_callback_cmd_vel(const geometry_msgs::Twist& cmd_vel_msg);
+void base_control_callback_reset(const std_msgs::Empty &reset_msg);
 
 base_control_get_time_milisec get_time_milis = NULL;
 
-ros::NodeHandle base_control_node_handle;               /*!< ROS node handle */
-
+ros::NodeHandle RosNodeHandle;
 uint32_t base_control_time_update[10];
 
-float zero_velocity[NUM_OF_VEL_TYPE] = {0.0, 0.0};            /*!< Velocity to stop motor */
-float goal_velocity[NUM_OF_VEL_TYPE] = {0.0, 0.0};            /*!< Velocity to control motor */
-float goal_velocity_from_cmd[NUM_OF_VEL_TYPE] = {0.0, 0.0};   /*!< Velocity receive from "cmd_vel" topic */
-float goal_velocity_from_motor[NUM_OF_VEL_TYPE] = {0.0, 0.0}; /*!< Velocity read from encoder */
-
+float zero_velocity[WHEEL_NUM] = {0.0, 0.0};                /*!< Velocity to stop motor */
+float goal_velocity[WHEEL_NUM] = {0.0, 0.0};                /*!< Velocity to control motor */
+float goal_velocity_from_cmd[WHEEL_NUM] = {0.0, 0.0};       /*!< Velocity receive from "cmd_vel" topic */
+float goal_velocity_from_motor[WHEEL_NUM] = {0.0, 0.0};     /*!< Velocity read from encoder */
 
 char log_msg[100];                  /*!< Log message buffer */
 
@@ -99,7 +94,6 @@ float odom_vel[3];
 
 bool setup_end        = false;
 
-
 uint32_t millis(void)
 {
     return get_time_milis();
@@ -130,17 +124,17 @@ void base_control_set_ros_func(base_control_get_time_milisec get_time)
 
 void base_control_ros_setup(void)
 {
-	base_control_node_handle.initNode();                      /*!< Init ROS node handle */
+    RosNodeHandle.initNode();                      /*!< Init ROS node handle */
 
-	base_control_node_handle.subscribe(cmd_vel_sub);          /*!< Subscribe "cmd_vel" topic to get motor cmd */
-	base_control_node_handle.subscribe(reset_sub);            /*!< Subscribe "reset" topic */
+    RosNodeHandle.subscribe(cmd_vel_sub);          /*!< Subscribe "cmd_vel" topic to get motor cmd */
+    RosNodeHandle.subscribe(reset_sub);            /*!< Subscribe "reset" topic */
 
-	base_control_node_handle.advertise(imu_pub);              /*!< Register the publisher to "imu" topic */
-	base_control_node_handle.advertise(cmd_vel_motor_pub);    /*!< Register the publisher to "cmd_vel_motor" topic */
-	base_control_node_handle.advertise(odom_pub);             /*!< Register the publisher to "odom" topic */
-	base_control_node_handle.advertise(joint_states_pub);     /*!< Register the publisher to "joint_states" topic */
+    RosNodeHandle.advertise(imu_pub);              /*!< Register the publisher to "imu" topic */
+    RosNodeHandle.advertise(cmd_vel_motor_pub);    /*!< Register the publisher to "cmd_vel_motor" topic */
+    RosNodeHandle.advertise(odom_pub);             /*!< Register the publisher to "odom" topic */
+    RosNodeHandle.advertise(joint_states_pub);     /*!< Register the publisher to "joint_states" topic */
 
-    tf_broadcaster.init(base_control_node_handle);            /*!< Init TransformBroadcaster */
+    tf_broadcaster.init(RosNodeHandle);            /*!< Init TransformBroadcaster */
     base_control_init_odom();           /*!< Init odometry value */
     base_control_init_joint_state();    /*!< Init joint state */
 
@@ -148,10 +142,20 @@ void base_control_ros_setup(void)
     setup_end = true;                   /*!< Flag for setup completed */
 }
 
+bool base_control_connect_status(void)
+{
+    return RosNodeHandle.connected();
+}
+
+void base_control_spin_once(void)
+{
+    RosNodeHandle.spinOnce();
+}
+
 void base_control_update_time(void)
 {
     current_offset = millis();
-    current_time = base_control_node_handle.now();
+    current_time = RosNodeHandle.now();
 }
 
 void base_control_update_variable(bool isConnected)
@@ -183,7 +187,7 @@ void base_control_update_tf_prefix(bool isConnected)
     {
         if (isChecked == false)
         {
-        	base_control_node_handle.getParam("~tf_prefix", &get_tf_prefix);
+            RosNodeHandle.getParam("~tf_prefix", &get_tf_prefix);
 
             if (!strcmp(get_tf_prefix, ""))
             {
@@ -209,13 +213,13 @@ void base_control_update_tf_prefix(bool isConnected)
             }
 
             sprintf(log_msg, "Setup TF on Odometry [%s]", odom_header_frame_id);
-            base_control_node_handle.loginfo(log_msg);
+            RosNodeHandle.loginfo(log_msg);
 
             sprintf(log_msg, "Setup TF on IMU [%s]", imu_frame_id);
-            base_control_node_handle.loginfo(log_msg);
+            RosNodeHandle.loginfo(log_msg);
 
             sprintf(log_msg, "Setup TF on JointState [%s]", joint_state_header_frame_id);
-            base_control_node_handle.loginfo(log_msg);
+            RosNodeHandle.loginfo(log_msg);
 
             isChecked = true;
         }
@@ -350,18 +354,18 @@ void base_control_send_log_msg(void)
 {
     static bool log_flag = false;
 
-    if (base_control_node_handle.connected())
+    if (RosNodeHandle.connected())
     {
         if (log_flag == false)
         {
             sprintf(log_msg, "--------------------------");
-            base_control_node_handle.loginfo(log_msg);
+            RosNodeHandle.loginfo(log_msg);
 
             sprintf(log_msg, "Connected to openSTM32-Board");
-            base_control_node_handle.loginfo(log_msg);
+            RosNodeHandle.loginfo(log_msg);
 
             sprintf(log_msg, "--------------------------");
-            base_control_node_handle.loginfo(log_msg);
+            RosNodeHandle.loginfo(log_msg);
 
             log_flag = true;
         }
@@ -393,17 +397,17 @@ void base_control_callback_reset(const std_msgs::Empty &reset_msg)
     (void)(reset_msg);
 
     sprintf(log_msg, "Start Calibration of Gyro");
-    base_control_node_handle.loginfo(log_msg);
+    RosNodeHandle.loginfo(log_msg);
 
     base_control_init_odom();
 
     sprintf(log_msg, "Reset Odometry");
-    base_control_node_handle.loginfo(log_msg);
+    RosNodeHandle.loginfo(log_msg);
 }
 
 ros::Time base_control_get_ros_time(void)
 {
-    return base_control_node_handle.now();
+    return RosNodeHandle.now();
 }
 
 ros::Time base_control_ros_time_add_microsec(ros::Time & t, uint32_t _micros)
@@ -468,17 +472,17 @@ void base_control_update_gyro_cali(bool isConnected)
 
     (void)(isConnected);
 
-    if (base_control_node_handle.connected())
+    if (RosNodeHandle.connected())
     {
         if (isEnded == false)
         {
             sprintf(log_msg, "Start Calibration of Gyro");
-            base_control_node_handle.loginfo(log_msg);
+            RosNodeHandle.loginfo(log_msg);
 
             //calibrationGyro();
 
             sprintf(log_msg, "Calibration End");
-            base_control_node_handle.loginfo(log_msg);
+            RosNodeHandle.loginfo(log_msg);
 
             isEnded = true;
         }
