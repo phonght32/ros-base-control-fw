@@ -115,7 +115,9 @@ void base_control_update_variable(bool isConnected);
 void base_control_update_tf_prefix(bool isConnected);
 
 /*
- * @brief   Update goal velocity to control motor.
+ * @brief   Update goal velocity from topic control velocity ("cmd_vel" by default).
+ *
+ * @note 	Goal velocity include linear and angular velocity.
  *
  * @param   None.
  *
