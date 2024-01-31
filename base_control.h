@@ -28,8 +28,7 @@
 #define CMD_VEL_PUBLISH_TIME_INDEX              1       /*!< Time index publish velocity */
 #define DRIVE_INFORMATION_PUBLISH_TIME_INDEX    2       /*!< Time index publish drive information */
 #define IMU_PUBLISH_TIME_INDEX                  3       /*!< Time index publish IMU information */
-#define LOG_PUBLISH_TIME_INDEX                  5
-#define CONTROL_MOTOR_TIMEOUT_TIME_INDEX        6       /*!< Time index control motor timeout */
+#define LOG_PUBLISH_TIME_INDEX                  4       /*!< Time index publish log information */
 
 /* Frequency of publish/subscribe */
 #define CONTROL_MOTOR_SPEED_FREQUENCY          10       /*!< Frequency in Hz to control motor */
@@ -199,5 +198,14 @@ void base_control_wait_serial_link(bool isConnected);
  * @return  None.
  */
 void base_control_send_log_msg(void);
+
+/*
+ * @brief   Get timestamp when callback of topic "cmd_vel" is triggered.
+ *
+ * @param   None.
+ *
+ * @return  Timestamp.
+ */
+uint32_t base_control_get_time_callback_cmdvel(void);
 
 #endif /* _ROBOT_ROS_CONFIG_H_ */

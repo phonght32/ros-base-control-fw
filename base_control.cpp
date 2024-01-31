@@ -32,6 +32,8 @@
 #define ROS_TOPIC_CMD_VEL                   "cmd_vel"
 #define ROS_TOPIC_CMD_VEL_MOTOR             "cmd_vel_motor"
 
+#define RECORD_TIME_CALLBACK_CMDVEL         0
+
 /* Linear & Angular velocity index */
 #define WHEEL_NUM 2 /*!< Num wheel */
 
@@ -60,7 +62,7 @@ static void base_control_callback_reset(const std_msgs::Empty &reset_msg);
 base_control_get_time_milisec func_get_time_milis = NULL;
 base_control_delay func_delay = NULL;
 
-uint32_t base_control_time_update[10];
+uint32_t record_time[5];
 
 ros::NodeHandle RosNodeHandle;    /*!< ROS node handle */
 ros::Time Ros_CurrentTime;        /*!< ROS current time */
@@ -138,7 +140,7 @@ static void base_control_callback_cmd_vel(const geometry_msgs::Twist &cmd_vel_ms
     goal_velocity_from_cmd[ANGULAR] = constrain(goal_velocity_from_cmd[ANGULAR], MIN_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
 
     /* Update time */
-    base_control_time_update[CONTROL_MOTOR_TIMEOUT_TIME_INDEX] = millis();
+    record_time[RECORD_TIME_CALLBACK_CMDVEL] = millis();
 }
 
 static void base_control_callback_reset(const std_msgs::Empty &reset_msg)
@@ -584,3 +586,9 @@ void base_control_send_log_msg(void)
         log_flag = false;
     }
 }
+
+uint32_t base_control_get_time_callback_cmdvel(void)
+{
+    return record_time[RECORD_TIME_CALLBACK_CMDVEL];
+}
+
