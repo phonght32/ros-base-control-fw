@@ -172,12 +172,14 @@ static ros::Time base_control_ros_time_add_microsec(ros::Time &t, uint32_t _micr
 
 static void base_control_update_odom(void)
 {
+#ifdef ROBOT_MODEL_DIFF_DRIVE
     diff_drive_get_odom(robot_kinematic_handle,
                         &odom_pose_x,
                         &odom_pose_y,
                         &odom_pose_theta,
                         &odom_vel_lin,
                         &odom_vel_ang);
+#endif
 
     odom.header.frame_id = odom_header_frame_id;
     odom.child_frame_id = odom_child_frame_id;
@@ -254,8 +256,6 @@ static void base_control_init_joint_state(void)
 
 static bool base_control_calc_odom(float diff_time)
 {
-#ifdef ROBOT_MODEL_DIFF_DRIVE
-    
     float theta;
     float q0, q1, q2, q3;
     periph_imu_get_quat(&q0, &q1, &q2, &q3);
@@ -265,6 +265,7 @@ static bool base_control_calc_odom(float diff_time)
     periph_encoder_left_get_tick(&left_tick);
     periph_encoder_right_get_tick(&right_tick);
 
+#ifdef ROBOT_MODEL_DIFF_DRIVE
     diff_drive_calc_odom(robot_kinematic_handle, diff_time, left_tick, right_tick, theta);
 #endif
     return true;
