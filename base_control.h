@@ -23,21 +23,6 @@
 #ifndef _ROBOT_ROS_CONFIG_H_
 #define _ROBOT_ROS_CONFIG_H_
 
-/* Time update index */
-#define CONTROL_MOTOR_TIME_INDEX                0       /*!< Time index control motor */
-#define CMD_VEL_PUBLISH_TIME_INDEX              1       /*!< Time index publish velocity */
-#define DRIVE_INFORMATION_PUBLISH_TIME_INDEX    2       /*!< Time index publish drive information */
-#define IMU_PUBLISH_TIME_INDEX                  3       /*!< Time index publish IMU information */
-#define LOG_PUBLISH_TIME_INDEX                  4       /*!< Time index publish log information */
-
-/* Frequency of publish/subscribe */
-#define CONTROL_MOTOR_SPEED_FREQUENCY          10       /*!< Frequency in Hz to control motor */
-#define CONTROL_MOTOR_TIMEOUT                  500      /*!< Period in ms to check control motor timeout */
-#define IMU_PUBLISH_FREQUENCY                  15      	/*!< Frequency in Hz to publish IMU information */
-#define CMD_VEL_PUBLISH_FREQUENCY              5       	/*!< Frequency in Hz to publish robot velocity */
-#define DRIVE_INFORMATION_PUBLISH_FREQUENCY    5       	/*!< Frequency in Hz to publish drive information */
-#define DEBUG_LOG_FREQUENCY                    10       /*!< Frequency in Hz to send log debug messages */
-
 typedef uint32_t (*base_control_get_time_milisec)(void);
 typedef void (*base_control_delay)(uint32_t time_ms);
 
