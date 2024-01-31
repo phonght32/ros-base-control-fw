@@ -153,15 +153,6 @@ void base_control_set_zero_vel(void);
 void base_control_set_goal_vel(void);
 
 /*
- * @brief   Get motor speed.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_get_motor_speed(void);
-
-/*
  * @brief   Publish linear and angular velocity to "cmd_vel_motor" topic.
  *
  * @param   None.

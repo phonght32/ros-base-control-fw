@@ -92,7 +92,6 @@ char *get_tf_prefix = get_prefix;
 
 float goal_velocity[2] = {0.0, 0.0};            /*!< Velocity to control motor */
 float goal_velocity_from_cmd[2] = {0.0, 0.0};   /*!< Velocity receive from "cmd_vel" topic */
-float goal_velocity_from_motor[2] = {0.0, 0.0}; /*!< Velocity read from encoder */
 
 float odom_pose_x;
 float odom_pose_y;
@@ -486,17 +485,11 @@ void base_control_set_goal_vel(void)
 #endif
 }
 
-void base_control_get_motor_speed(void)
-{
-    goal_velocity_from_motor[LINEAR] = goal_velocity_from_cmd[LINEAR];
-    goal_velocity_from_motor[ANGULAR] = goal_velocity_from_cmd[ANGULAR];
-}
-
 void base_control_publish_cmdvel_from_motor_msg(void)
 {
     /* Get motor velocity */
-    cmd_vel_motor_msg.linear.x = goal_velocity_from_motor[LINEAR];
-    cmd_vel_motor_msg.angular.z = goal_velocity_from_motor[ANGULAR];
+    cmd_vel_motor_msg.linear.x = goal_velocity_from_cmd[LINEAR];
+    cmd_vel_motor_msg.angular.z = goal_velocity_from_cmd[ANGULAR];
 
     /* Publish veloctiy to "cmd_vel_motor" topic */
     cmd_vel_motor_pub.publish(&cmd_vel_motor_msg);
@@ -531,6 +524,8 @@ void base_control_publish_drive_info(void)
 
 void base_control_publish_imu_msg(void)
 {
+    periph_imu_update_quat();
+    
     /* Get IMU data (accelerometer, gyroscope, quaternion and variance ) */
     imu_msg = base_control_get_imu();
 
