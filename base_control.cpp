@@ -57,7 +57,7 @@ static ros::Time base_control_get_ros_time(void);
 static void base_control_callback_cmd_vel(const geometry_msgs::Twist &cmd_vel_msg);
 static void base_control_callback_reset(const std_msgs::Empty &reset_msg);
 
-base_control_get_time_milisec get_time_milis = NULL;
+base_control_get_time_milisec func_get_time_milis = NULL;
 base_control_delay func_delay = NULL;
 
 uint32_t base_control_time_update[10];
@@ -106,7 +106,7 @@ diff_drive_handle_t robot_kinematic_handle = NULL;
 
 static uint32_t millis(void)
 {
-    return get_time_milis();
+    return func_get_time_milis();
 }
 
 static float constrain(float x, float low_val, float high_val)
@@ -332,7 +332,7 @@ static sensor_msgs::Imu base_control_get_imu(void)
 void base_control_set_ros_func(base_control_get_time_milisec get_time,
                                base_control_delay delay)
 {
-    get_time_milis = get_time;
+    func_get_time_milis = get_time;
     func_delay = delay;
 }
 
