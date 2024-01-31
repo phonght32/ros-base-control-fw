@@ -40,6 +40,7 @@
 #define DEBUG_LOG_FREQUENCY                    10       /*!< Frequency in Hz to send log debug messages */
 
 typedef uint32_t (*base_control_get_time_milisec)(void);
+typedef void (*base_control_delay)(uint32_t time_ms);
 
 /*
  * @brief   Set functions for ROS.
@@ -47,10 +48,12 @@ typedef uint32_t (*base_control_get_time_milisec)(void);
  * @note 	This function must be called first to assign hardware interface.
  *
  * @param   get_time Function get time.
+ * @param   delay Function delay.
  *
  * @return  None.
  */
-void base_control_set_ros_func(base_control_get_time_milisec get_time);
+void base_control_set_ros_func(base_control_get_time_milisec get_time,
+                               base_control_delay delay);
 
 /*
  * @brief   This function do the following jobs as below:

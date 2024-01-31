@@ -58,6 +58,7 @@ static void base_control_callback_cmd_vel(const geometry_msgs::Twist &cmd_vel_ms
 static void base_control_callback_reset(const std_msgs::Empty &reset_msg);
 
 base_control_get_time_milisec get_time_milis = NULL;
+base_control_delay func_delay = NULL;
 
 uint32_t base_control_time_update[10];
 
@@ -328,9 +329,11 @@ static sensor_msgs::Imu base_control_get_imu(void)
     return imu_msg_;
 }
 
-void base_control_set_ros_func(base_control_get_time_milisec get_time)
+void base_control_set_ros_func(base_control_get_time_milisec get_time,
+                               base_control_delay delay)
 {
     get_time_milis = get_time;
+    func_delay = delay;
 }
 
 void base_control_ros_setup(void)
@@ -545,7 +548,7 @@ void base_control_wait_serial_link(bool isConnected)
     {
         if (wait_flag == false)
         {
-            HAL_Delay(10);
+            func_delay(10);
 
             wait_flag = true;
         }
