@@ -10,3 +10,6 @@
 [submodule "encoder"]
 	path = encoder
 	url = git@github.com:phonght32/encoder.git
+[submodule "differential_drive"]
+	path = differential_drive
+	url = git@github.com:phonght32/differential_drive.git

@@ -21,66 +21,63 @@
 #include "periph/periph.h"
 #include "base_control_hw_define.h"
 #include "base_control.h"
+#include "differential_drive/differential_drive.h"
 
-#define ROS_TOPIC_IMU               "imu"
-#define ROS_TOPIC_JOINT_STATES      "joint_states"
-#define ROS_TOPIC_ODOM              "odom"
-#define ROS_TOPIC_RESET             "reset"
-#define ROS_TOPIC_CMD_VEL           "cmd_vel"
-#define ROS_TOPIC_CMD_VEL_MOTOR     "cmd_vel_motor"
+#define ROBOT_MODEL_DIFF_DRIVE
 
+#define ROS_TOPIC_IMU                       "imu"
+#define ROS_TOPIC_JOINT_STATES              "joint_states"
+#define ROS_TOPIC_ODOM                      "odom"
+#define ROS_TOPIC_RESET                     "reset"
+#define ROS_TOPIC_CMD_VEL                   "cmd_vel"
+#define ROS_TOPIC_CMD_VEL_MOTOR             "cmd_vel_motor"
 
 /* Linear & Angular velocity index */
-#define WHEEL_NUM       2                       /*!< Num wheel */
+#define WHEEL_NUM 2 /*!< Num wheel */
 
-#define LEFT            0                       /*!< Left wheel index */
-#define RIGHT           1                       /*!< Right wheel index */
+#define LEFT 0  /*!< Left wheel index */
+#define RIGHT 1 /*!< Right wheel index */
 
-#define LINEAR          0                       /*!< Linear velocity index */
-#define ANGULAR         1                       /*!< Angular velocity index */
+#define LINEAR 0  /*!< Linear velocity index */
+#define ANGULAR 1 /*!< Angular velocity index */
 
 static void base_control_init_joint_state(void);
 static void base_control_init_odom(void);
 
-static void base_control_update_gyro_cali(bool isConnected);
 static void base_control_update_joint_state(void);
 static void base_control_update_joint(void);
 static void base_control_update_odom(void);
-static void base_control_update_tf(geometry_msgs::TransformStamped& odom_tf);
+static void base_control_update_tf(geometry_msgs::TransformStamped &odom_tf);
 static bool base_control_calc_odom(float diff_time);
 static sensor_msgs::Imu base_control_get_imu(void);
 
 static ros::Time base_control_ros_time_add_microsec(ros::Time &t, uint32_t _micros);
 static ros::Time base_control_get_ros_time(void);
 
-static void base_control_callback_cmd_vel(const geometry_msgs::Twist& cmd_vel_msg);
+static void base_control_callback_cmd_vel(const geometry_msgs::Twist &cmd_vel_msg);
 static void base_control_callback_reset(const std_msgs::Empty &reset_msg);
 
 base_control_get_time_milisec get_time_milis = NULL;
 
 uint32_t base_control_time_update[10];
 
-ros::NodeHandle RosNodeHandle;                          /*!< ROS node handle */
-ros::Time Ros_CurrentTime;                              /*!< ROS current time */
-uint32_t Ros_CurrentTimeOffset;                         /*!< ROS current time offset */
-unsigned long Ros_PrevUpdateTime;                       /*!< ROS previous update time */
-char Ros_LogBuffer[100];                                /*!< ROS log message buffer */
-
-bool BaseControl_InitEncoder = true;                    /*!< Base control initialize encoder flag */
-float BaseControl_OdomPose[3];
-float BaseControl_OdomVel[3];
+ros::NodeHandle RosNodeHandle;    /*!< ROS node handle */
+ros::Time Ros_CurrentTime;        /*!< ROS current time */
+uint32_t Ros_CurrentTimeOffset;   /*!< ROS current time offset */
+unsigned long Ros_PrevUpdateTime; /*!< ROS previous update time */
+char Ros_LogBuffer[100];          /*!< ROS log message buffer */
 
 char odom_header_frame_id[30];
 char odom_child_frame_id[30];
 char imu_frame_id[30];
 char joint_state_header_frame_id[30];
 
-sensor_msgs::Imu imu_msg;                           /*!< ROS IMU message */
-geometry_msgs::Twist cmd_vel_motor_msg;             /*!< ROS command velocity message */
-nav_msgs::Odometry odom;                            /*!< ROS odometry message */
-sensor_msgs::JointState joint_states;               /*!< ROS joint states message */
-geometry_msgs::TransformStamped odom_tf;            /*!< ROS transform stamped message */
-tf::TransformBroadcaster tf_broadcaster;            /*!< ROS tf broadcaster message */
+sensor_msgs::Imu imu_msg;                /*!< ROS IMU message */
+geometry_msgs::Twist cmd_vel_motor_msg;  /*!< ROS command velocity message */
+nav_msgs::Odometry odom;                 /*!< ROS odometry message */
+sensor_msgs::JointState joint_states;    /*!< ROS joint states message */
+geometry_msgs::TransformStamped odom_tf; /*!< ROS transform stamped message */
+tf::TransformBroadcaster tf_broadcaster; /*!< ROS tf broadcaster message */
 
 ros::Subscriber<geometry_msgs::Twist> cmd_vel_sub(ROS_TOPIC_CMD_VEL, base_control_callback_cmd_vel);
 ros::Subscriber<std_msgs::Empty> reset_sub(ROS_TOPIC_RESET, base_control_callback_reset);
@@ -93,14 +90,19 @@ ros::Publisher joint_states_pub(ROS_TOPIC_JOINT_STATES, &joint_states);
 char get_prefix[10];
 char *get_tf_prefix = get_prefix;
 
-float goal_velocity[2] = {0.0, 0.0};                /*!< Velocity to control motor */
-float goal_velocity_from_cmd[2] = {0.0, 0.0};       /*!< Velocity receive from "cmd_vel" topic */
-float goal_velocity_from_motor[2] = {0.0, 0.0};     /*!< Velocity read from encoder */
+float goal_velocity[2] = {0.0, 0.0};            /*!< Velocity to control motor */
+float goal_velocity_from_cmd[2] = {0.0, 0.0};   /*!< Velocity receive from "cmd_vel" topic */
+float goal_velocity_from_motor[2] = {0.0, 0.0}; /*!< Velocity read from encoder */
 
-int32_t BaseControl_LastDiffTick[WHEEL_NUM] = {0, 0};
-float BaseControl_LastRad[WHEEL_NUM] = {0.0, 0.0};
-float  BaseControl_LastVel[WHEEL_NUM]  = {0.0, 0.0};
+float odom_pose_x;
+float odom_pose_y;
+float odom_pose_theta;
+float odom_vel_lin;
+float odom_vel_ang;
 
+#ifdef ROBOT_MODEL_DIFF_DRIVE
+diff_drive_handle_t robot_kinematic_handle = NULL;
+#endif
 
 static uint32_t millis(void)
 {
@@ -125,14 +127,14 @@ static float constrain(float x, float low_val, float high_val)
     return value;
 }
 
-static void base_control_callback_cmd_vel(const geometry_msgs::Twist& cmd_vel_msg)
+static void base_control_callback_cmd_vel(const geometry_msgs::Twist &cmd_vel_msg)
 {
     /* Get goal velocity */
     goal_velocity_from_cmd[LINEAR] = cmd_vel_msg.linear.x;
     goal_velocity_from_cmd[ANGULAR] = cmd_vel_msg.angular.z;
 
     /* Constrain velocity */
-    goal_velocity_from_cmd[LINEAR]  = constrain(goal_velocity_from_cmd[LINEAR],  MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
+    goal_velocity_from_cmd[LINEAR] = constrain(goal_velocity_from_cmd[LINEAR], MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
     goal_velocity_from_cmd[ANGULAR] = constrain(goal_velocity_from_cmd[ANGULAR], MIN_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
 
     /* Update time */
@@ -159,11 +161,11 @@ static ros::Time base_control_get_ros_time(void)
     return RosNodeHandle.now();
 }
 
-static ros::Time base_control_ros_time_add_microsec(ros::Time & t, uint32_t _micros)
+static ros::Time base_control_ros_time_add_microsec(ros::Time &t, uint32_t _micros)
 {
     uint32_t sec, nsec;
 
-    sec  = _micros / 1000 + t.sec;
+    sec = _micros / 1000 + t.sec;
     nsec = _micros % 1000000000 + t.nsec;
 
     return ros::Time(sec, nsec);
@@ -171,30 +173,33 @@ static ros::Time base_control_ros_time_add_microsec(ros::Time & t, uint32_t _mic
 
 static void base_control_update_odom(void)
 {
+    diff_drive_get_odom(robot_kinematic_handle,
+                        &odom_pose_x,
+                        &odom_pose_y,
+                        &odom_pose_theta,
+                        &odom_vel_lin,
+                        &odom_vel_ang);
+
     odom.header.frame_id = odom_header_frame_id;
-    odom.child_frame_id  = odom_child_frame_id;
+    odom.child_frame_id = odom_child_frame_id;
 
-    odom.pose.pose.position.x = BaseControl_OdomPose[0];
-    odom.pose.pose.position.y = BaseControl_OdomPose[1];
+    odom.pose.pose.position.x = odom_pose_x;
+    odom.pose.pose.position.y = odom_pose_y;
     odom.pose.pose.position.z = 0;
-    odom.pose.pose.orientation = tf::createQuaternionFromYaw(BaseControl_OdomPose[2]);
+    odom.pose.pose.orientation = tf::createQuaternionFromYaw(odom_pose_theta);
 
-    odom.twist.twist.linear.x  = BaseControl_OdomVel[0];
-    odom.twist.twist.angular.z = BaseControl_OdomVel[2];
+    odom.twist.twist.linear.x = odom_vel_lin;
+    odom.twist.twist.angular.z = odom_vel_ang;
 }
 
 static void base_control_update_joint_state(void)
 {
+#ifdef ROBOT_MODEL_DIFF_DRIVE
     static float joint_states_pos[WHEEL_NUM] = {0.0, 0.0};
     static float joint_states_vel[WHEEL_NUM] = {0.0, 0.0};
-    //static float joint_states_eff[WHEEL_NUM] = {0.0, 0.0};
-
-    joint_states_pos[LEFT]  = BaseControl_LastRad[LEFT];
-    joint_states_pos[RIGHT] = BaseControl_LastRad[RIGHT];
-
-    joint_states_vel[LEFT]  = BaseControl_LastVel[LEFT];
-    joint_states_vel[RIGHT] = BaseControl_LastVel[RIGHT];
-
+    diff_drive_get_rad(robot_kinematic_handle, &joint_states_pos[LEFT], &joint_states_pos[RIGHT]);
+    diff_drive_get_vel(robot_kinematic_handle, &joint_states_vel[LEFT], &joint_states_vel[RIGHT]);
+#endif
     joint_states.position = (double *)joint_states_pos;
     joint_states.velocity = (double *)joint_states_vel;
 }
@@ -204,53 +209,23 @@ static void base_control_update_joint(void)
 
 }
 
-static void base_control_update_tf(geometry_msgs::TransformStamped& odom_tf)
+static void base_control_update_tf(geometry_msgs::TransformStamped &odom_tf)
 {
     odom_tf.header = odom.header;
     odom_tf.child_frame_id = odom.child_frame_id;
     odom_tf.transform.translation.x = odom.pose.pose.position.x;
     odom_tf.transform.translation.y = odom.pose.pose.position.y;
     odom_tf.transform.translation.z = odom.pose.pose.position.z;
-    odom_tf.transform.rotation      = odom.pose.pose.orientation;
-}
-
-static void base_control_update_gyro_cali(bool isConnected)
-{
-    static bool isEnded = false;
-    char log_msg[50];
-
-    (void)(isConnected);
-
-    if (RosNodeHandle.connected())
-    {
-        if (isEnded == false)
-        {
-            sprintf(log_msg, "Start Calibration of Gyro");
-            RosNodeHandle.loginfo(log_msg);
-
-            //calibrationGyro();
-
-            sprintf(log_msg, "Calibration End");
-            RosNodeHandle.loginfo(log_msg);
-
-            isEnded = true;
-        }
-    }
-    else
-    {
-        isEnded = false;
-    }
+    odom_tf.transform.rotation = odom.pose.pose.orientation;
 }
 
 static void base_control_init_odom(void)
 {
-    BaseControl_InitEncoder = true;
-
-    for (int index = 0; index < 3; index++)
-    {
-        BaseControl_OdomPose[index] = 0.0;
-        BaseControl_OdomVel[index]  = 0.0;
-    }
+    odom_pose_x = 0;
+    odom_pose_y = 0;
+    odom_pose_theta = 0;
+    odom_vel_lin = 0;
+    odom_vel_ang = 0;
 
     odom.pose.pose.position.x = 0.0;
     odom.pose.pose.position.y = 0.0;
@@ -261,76 +236,38 @@ static void base_control_init_odom(void)
     odom.pose.pose.orientation.z = 0.0;
     odom.pose.pose.orientation.w = 0.0;
 
-    odom.twist.twist.linear.x  = 0.0;
+    odom.twist.twist.linear.x = 0.0;
     odom.twist.twist.angular.z = 0.0;
 }
 
 static void base_control_init_joint_state(void)
 {
-    static char *joint_states_name[] = {(char*)"wheel_left_joint", (char*)"wheel_right_joint"};
+    static char *joint_states_name[] = {(char *)"wheel_left_joint", (char *)"wheel_right_joint"};
 
     joint_states.header.frame_id = joint_state_header_frame_id;
-    joint_states.name            = joint_states_name;
+    joint_states.name = joint_states_name;
 
-    joint_states.name_length     = WHEEL_NUM;
+    joint_states.name_length = WHEEL_NUM;
     joint_states.position_length = WHEEL_NUM;
     joint_states.velocity_length = WHEEL_NUM;
-    joint_states.effort_length   = WHEEL_NUM;
+    joint_states.effort_length = WHEEL_NUM;
 }
 
 static bool base_control_calc_odom(float diff_time)
 {
-    float wheel_l, wheel_r;      // rotation value of wheel [rad]
-    float delta_s, theta, delta_theta;
-    static float last_theta = 0.0f;
-    float v, w;                  // v = translational velocity [m/s], w = rotational velocity [rad/s]
-    float step_time;
-
-    wheel_l = wheel_r = 0.0f;
-    delta_s = delta_theta = theta = 0.0f;
-    v = w = 0.0f;
-    step_time = 0.0f;
-
-    step_time = diff_time;
-
-    if (step_time == 0)
-        return false;
-
-    wheel_l = TICK2RAD * (float)BaseControl_LastDiffTick[LEFT];
-    wheel_r = TICK2RAD * (float)BaseControl_LastDiffTick[RIGHT];
-
-    if (isnan(wheel_l))
-        wheel_l = 0.0f;
-
-    if (isnan(wheel_r))
-        wheel_r = 0.0f;
-
-    delta_s     = WHEEL_RADIUS * (wheel_r + wheel_l) / 2.0f;
-//     theta = WHEEL_RADIUS * (wheel_r - wheel_l) / WHEEL_SEPARATION;
-
+#ifdef ROBOT_MODEL_DIFF_DRIVE
+    
+    float theta;
     float q0, q1, q2, q3;
     periph_imu_get_quat(&q0, &q1, &q2, &q3);
     theta = atan2f(q0 * q3 + q1 * q2, 0.5f - q2 * q2 - q3 * q3);
-    delta_theta = theta - last_theta;
 
-    // compute odometric pose
-    BaseControl_OdomPose[0] += delta_s * cos(BaseControl_OdomPose[2] + (delta_theta / 2.0));
-    BaseControl_OdomPose[1] += delta_s * sin(BaseControl_OdomPose[2] + (delta_theta / 2.0));
-    BaseControl_OdomPose[2] += delta_theta;
+    int32_t left_tick, right_tick;
+    periph_encoder_left_get_tick(&left_tick);
+    periph_encoder_right_get_tick(&right_tick);
 
-    // compute odometric instantaneouse velocity
-
-    v = delta_s / step_time;
-    w = delta_theta / step_time;
-
-    BaseControl_OdomVel[0] = v;
-    BaseControl_OdomVel[1] = 0.0;
-    BaseControl_OdomVel[2] = w;
-
-    BaseControl_LastVel[LEFT]  = wheel_l / step_time;
-    BaseControl_LastVel[RIGHT] = wheel_r / step_time;
-    last_theta = theta;
-
+    diff_drive_calc_odom(robot_kinematic_handle, diff_time, left_tick, right_tick, theta);
+#endif
     return true;
 }
 
@@ -398,21 +335,39 @@ void base_control_set_ros_func(base_control_get_time_milisec get_time)
 
 void base_control_ros_setup(void)
 {
-    RosNodeHandle.initNode();                       /*!< Init ROS node handle */
+    RosNodeHandle.initNode(); /*!< Init ROS node handle */
 
-    RosNodeHandle.subscribe(cmd_vel_sub);           /*!< Subscribe "cmd_vel" topic to get motor cmd */
-    RosNodeHandle.subscribe(reset_sub);             /*!< Subscribe "reset" topic */
+    RosNodeHandle.subscribe(cmd_vel_sub); /*!< Subscribe "cmd_vel" topic to get motor cmd */
+    RosNodeHandle.subscribe(reset_sub);   /*!< Subscribe "reset" topic */
 
-    RosNodeHandle.advertise(imu_pub);               /*!< Register the publisher to "imu" topic */
-    RosNodeHandle.advertise(cmd_vel_motor_pub);     /*!< Register the publisher to "cmd_vel_motor" topic */
-    RosNodeHandle.advertise(odom_pub);              /*!< Register the publisher to "odom" topic */
-    RosNodeHandle.advertise(joint_states_pub);      /*!< Register the publisher to "joint_states" topic */
+    RosNodeHandle.advertise(imu_pub);           /*!< Register the publisher to "imu" topic */
+    RosNodeHandle.advertise(cmd_vel_motor_pub); /*!< Register the publisher to "cmd_vel_motor" topic */
+    RosNodeHandle.advertise(odom_pub);          /*!< Register the publisher to "odom" topic */
+    RosNodeHandle.advertise(joint_states_pub);  /*!< Register the publisher to "joint_states" topic */
 
-    tf_broadcaster.init(RosNodeHandle);             /*!< Init TransformBroadcaster */
-    base_control_init_odom();                       /*!< Init odometry value */
-    base_control_init_joint_state();                /*!< Init joint state */
+    tf_broadcaster.init(RosNodeHandle); /*!< Init TransformBroadcaster */
+    base_control_init_odom();           /*!< Init odometry value */
+    base_control_init_joint_state();    /*!< Init joint state */
 
-    Ros_PrevUpdateTime = millis();                    /*!< Update time */
+    Ros_PrevUpdateTime = millis(); /*!< Update time */
+}
+
+void base_control_setup(void)
+{
+#ifdef ROBOT_MODEL_DIFF_DRIVE
+    robot_kinematic_handle = diff_drive_init();
+    diff_drive_cfg_t diff_drive_cfg = {
+        .wheel_radius = WHEEL_RADIUS,
+        .wheel_seperation = WHEEL_SEPARATION,
+        .min_lin_vel = MIN_LINEAR_VELOCITY,
+        .max_lin_vel = MAX_LINEAR_VELOCITY,
+        .min_ang_vel = MIN_ANGULAR_VELOCITY,
+        .max_ang_vel = MAX_ANGULAR_VELOCITY,
+        .tick_to_rad = TICK2RAD
+    };
+    diff_drive_set_config(robot_kinematic_handle, diff_drive_cfg);
+    diff_drive_config(robot_kinematic_handle);
+#endif
 }
 
 bool base_control_connect_status(void)
@@ -505,31 +460,8 @@ void base_control_update_tf_prefix(bool isConnected)
 
 void base_control_update_goal_vel(void)
 {
-    goal_velocity[LINEAR]  = goal_velocity_from_cmd[LINEAR];
+    goal_velocity[LINEAR] = goal_velocity_from_cmd[LINEAR];
     goal_velocity[ANGULAR] = goal_velocity_from_cmd[ANGULAR];
-}
-
-void base_control_update_motor_info(int32_t left_tick, int32_t right_tick)
-{
-    if (BaseControl_InitEncoder)
-    {
-        for (int index = 0; index < WHEEL_NUM; index++)
-        {
-            BaseControl_LastDiffTick[index] = 0;
-            BaseControl_LastRad[index]       = 0.0f;
-
-            BaseControl_LastVel[index]  = 0.0f;
-        }
-
-        BaseControl_InitEncoder = false;
-        return;
-    }
-
-    BaseControl_LastDiffTick[LEFT] = left_tick;
-    BaseControl_LastRad[LEFT] += TICK2RAD * (float)BaseControl_LastDiffTick[LEFT];
-
-    BaseControl_LastDiffTick[RIGHT] = right_tick;
-    BaseControl_LastRad[RIGHT] += TICK2RAD * (float)BaseControl_LastDiffTick[RIGHT];
 }
 
 void base_control_set_zero_vel(void)
@@ -540,19 +472,18 @@ void base_control_set_zero_vel(void)
 
 void base_control_set_goal_vel(void)
 {
-    float wheel_velocity_cmd[2];
+#ifdef ROBOT_MODEL_DIFF_DRIVE
+    float left_wheel_vel, right_wheel_vel;
 
-    float lin_vel = goal_velocity[LINEAR];
-    float ang_vel = goal_velocity[ANGULAR];
+    diff_drive_calc_wheel_vel(robot_kinematic_handle,
+                              goal_velocity[LINEAR],
+                              goal_velocity[ANGULAR],
+                              &left_wheel_vel,
+                              &right_wheel_vel);
 
-    wheel_velocity_cmd[LEFT]  = lin_vel - (ang_vel * WHEEL_SEPARATION / 2);
-    wheel_velocity_cmd[RIGHT] = lin_vel + (ang_vel * WHEEL_SEPARATION / 2);
-
-    wheel_velocity_cmd[LEFT]  = constrain(wheel_velocity_cmd[LEFT], MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
-    wheel_velocity_cmd[RIGHT] = constrain(wheel_velocity_cmd[RIGHT], MIN_LINEAR_VELOCITY, MAX_LINEAR_VELOCITY);
-
-    periph_motor_left_set_speed(wheel_velocity_cmd[LEFT]);
-    periph_motor_right_set_speed(wheel_velocity_cmd[RIGHT]);
+    periph_motor_left_set_speed(left_wheel_vel);
+    periph_motor_right_set_speed(right_wheel_vel);
+#endif
 }
 
 void base_control_get_motor_speed(void)

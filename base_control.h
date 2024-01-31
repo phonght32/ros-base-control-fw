@@ -68,6 +68,15 @@ void base_control_set_ros_func(base_control_get_time_milisec get_time);
 void base_control_ros_setup(void);
 
 /*
+ * @brief   Setup robot kinematic model.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_setup(void);
+
+/*
  * @brief  	Get connect status between base control and ROS node.
  *
  * @param   None.
@@ -124,16 +133,6 @@ void base_control_update_tf_prefix(bool isConnected);
  * @return  None.
  */
 void base_control_update_goal_vel(void);
-
-/*
- * @brief   Update motor information.
- *
- * @param   left_tick
- * @pram    right_tick
- *
- * @return  None.
- */
-void base_control_update_motor_info(int32_t left_tick, int32_t right_tick);
 
 /*
  * @brief   Set zero velocity to motor.
