@@ -55,7 +55,8 @@ void base_control_set_ros_func(base_control_get_time_milisec get_time,
 void base_control_ros_setup(void);
 
 /*
- * @brief   Setup robot kinematic model.
+ * @brief   Setup robot kinematic model. Currently differential wheeled drive is 
+ *          supported. Other robot kinematic model will be developed in future.
  *
  * @param   None.
  *
@@ -64,7 +65,7 @@ void base_control_ros_setup(void);
 void base_control_setup(void);
 
 /*
- * @brief  	Get connect status between base control and ROS node.
+ * @brief  	Get connection status between base control and ROS node.
  *
  * @param   None.
  *
@@ -84,7 +85,7 @@ bool base_control_connect_status(void);
 void base_control_spin_once(void);
 
 /*
- * @brief   Update ROS time from system time.
+ * @brief   Update current ROS time and time offset to base control.
  *
  * @param   None.
  *
@@ -93,7 +94,7 @@ void base_control_spin_once(void);
 void base_control_update_time(void);
 
 /*
- * @brief   Update variable (Odometry and IMU parameters).
+ * @brief   Re-initialize odometry if rosserial lost communication happened.
  *
  * @param   isConnected Check rosserial connect.
  *
@@ -102,7 +103,7 @@ void base_control_update_time(void);
 void base_control_update_variable(bool isConnected);
 
 /*
- * @brief   Update TFPrefix.
+ * @brief   Re-initialize tf if rosserial lost communication happened.
  *
  * @param   isConnected Check rosserial connect.
  *
@@ -149,7 +150,7 @@ void base_control_set_goal_vel(void);
 void base_control_publish_cmdvel_from_motor_msg(void);
 
 /*
- * @brief   Publish drive information.
+ * @brief   Calculate odometry and publish odometry to ROS.
  *
  * @param   None.
  *
@@ -158,7 +159,7 @@ void base_control_publish_cmdvel_from_motor_msg(void);
 void base_control_publish_drive_info(void);
 
 /*
- * @brief   Update IMU.
+ * @brief   Update IMU quaternion.
  *
  * @param   None.
  *
