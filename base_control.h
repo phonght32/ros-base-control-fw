@@ -158,6 +158,15 @@ void base_control_publish_cmdvel_from_motor_msg(void);
 void base_control_publish_drive_info(void);
 
 /*
+ * @brief   Update IMU.
+ *
+ * @param   None.
+ *
+ * @return  None.
+ */
+void base_control_update_imu(void);
+
+/*
  * @brief   Publish IMU information.
  *
  * @param   None.

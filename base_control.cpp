@@ -23,6 +23,8 @@
 #include "base_control.h"
 #include "differential_drive/differential_drive.h"
 
+#define USE_ROS_LOG_DEBUG
+
 #define ROBOT_MODEL_DIFF_DRIVE
 
 #define ROS_TOPIC_IMU                       "imu"
@@ -35,13 +37,13 @@
 #define RECORD_TIME_CALLBACK_CMDVEL         0
 
 /* Linear & Angular velocity index */
-#define WHEEL_NUM 2 /*!< Num wheel */
+#define WHEEL_NUM       2       /*!< Num wheel */
 
-#define LEFT 0  /*!< Left wheel index */
-#define RIGHT 1 /*!< Right wheel index */
+#define LEFT            0       /*!< Left wheel index */
+#define RIGHT           1       /*!< Right wheel index */
 
-#define LINEAR 0  /*!< Linear velocity index */
-#define ANGULAR 1 /*!< Angular velocity index */
+#define LINEAR          0       /*!< Linear velocity index */
+#define ANGULAR         1       /*!< Angular velocity index */
 
 static void base_control_init_joint_state(void);
 static void base_control_init_odom(void);
@@ -528,10 +530,13 @@ void base_control_publish_drive_info(void)
     joint_states_pub.publish(&joint_states);
 }
 
-void base_control_publish_imu_msg(void)
+void base_control_update_imu(void)
 {
     periph_imu_update_quat();
-    
+}
+
+void base_control_publish_imu_msg(void)
+{
     /* Get IMU data (accelerometer, gyroscope, quaternion and variance ) */
     imu_msg = base_control_get_imu();
 
@@ -540,6 +545,20 @@ void base_control_publish_imu_msg(void)
 
     /* Publish IMU messages */
     imu_pub.publish(&imu_msg);
+
+#ifdef USE_ROS_LOG_DEBUG
+    float q0, q1, q2, q3;
+    float roll, pitch, yaw;
+
+    periph_imu_get_quat(&q0, &q1, &q2, &q3);
+
+    roll = 180.0 / 3.14 * atan2(2 * (q0 * q1 + q2 * q3), 1 - 2 * (q1 * q1 + q2 * q2));
+    pitch = 180.0 / 3.14 * asin(2 * (q0 * q2 - q3 * q1));
+    yaw = 180.0 / 3.14 * atan2f(q0 * q3 + q1 * q2, 0.5f - q2 * q2 - q3 * q3);
+
+    sprintf(Ros_LogBuffer, "roll: %7.4f\tpitch: %7.4f\tyaw: %7.4f\t", roll, pitch, yaw);
+    RosNodeHandle.loginfo(Ros_LogBuffer);
+#endif
 }
 
 void base_control_wait_serial_link(bool isConnected)
