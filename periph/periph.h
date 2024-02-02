@@ -35,7 +35,7 @@ extern "C" {
 #include "err_code.h"
 
 #define DEFAULT_MADGWICK_BETA  				0.1f
-#define DEFAULT_MADGWICK_SAMPLE_FREQ  		6000.0f
+#define DEFAULT_MADGWICK_SAMPLE_FREQ  		10000.0f
 
 typedef struct {
 	imu_func_read_bytes 		mpu6050_read_bytes;			/*!< MPU6050 read bytes */
