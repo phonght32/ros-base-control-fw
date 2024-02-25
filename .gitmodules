@@ -10,3 +10,6 @@
 [submodule "differential_drive"]
 	path = differential_drive
 	url = git@github.com:phonght32/differential_drive.git
+[submodule "mpu6050"]
+	path = mpu6050
+	url = git@github.com:phonght32/mpu6050.git
