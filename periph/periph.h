@@ -27,24 +27,29 @@
 extern "C" {
 #endif
 
-#include "imu.h"
+#include "mpu6050/mpu6050.h"
 #include "madgwick/imu_madgwick.h"
 #include "stepmotor.h"
 #include "encoder.h"
 
 #include "err_code.h"
 
+#define USE_MPU6050
+
 #define DEFAULT_MADGWICK_BETA  				0.1f
 #define DEFAULT_MADGWICK_SAMPLE_FREQ  		10000.0f
 
 typedef struct {
-	imu_func_read_bytes 		mpu6050_read_bytes;			/*!< MPU6050 read bytes */
-	imu_func_write_bytes 		mpu6050_write_bytes;		/*!< MPU6050 write bytes */
-	imu_func_read_bytes     	ak8963_read_bytes;			/*!< AK8963 write bytes */
-	imu_func_write_bytes    	ak8963_write_bytes;			/*!< AK8963 write bytes */
-	imu_func_read_bytes     	mpu6500_read_bytes;			/*!< MPU6500 write bytes */
-	imu_func_write_bytes    	mpu6500_write_bytes;		/*!< MPU6500 write bytes */
-	imu_func_delay 				func_delay;					/*!< IMU delay function */
+#ifdef USE_MPU6050
+	mpu6050_clksel_t        	clksel;         			/*!< MPU6050 clock source */
+	mpu6050_dlpf_cfg_t      	dlpf_cfg;       			/*!< MPU6050 digital low pass filter (DLPF) */
+	mpu6050_sleep_mode_t    	sleep_mode;     			/*!< MPU6050 sleep mode */
+	mpu6050_gfs_sel_t        	gfs_sel;         			/*!< MPU6050 gyroscope full scale range */
+	mpu6050_afs_sel_t       	afs_sel;        			/*!< MPU6050 accelerometer full scale range */
+	mpu6050_func_i2c_send       i2c_send;        			/*!< MPU6050 send bytes */
+	mpu6050_func_i2c_recv       i2c_recv;         			/*!< MPU6050 receive bytes */
+	mpu6050_func_delay          delay;                 		/*!< MPU6050 delay function */
+#endif
 } periph_imu_cfg_t;
 
 typedef struct {

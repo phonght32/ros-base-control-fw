@@ -1,8 +1,5 @@
 #include "base_control_hw_define.h"
 #include "periph.h"
-#include "imu.h"
-#include "madgwick/imu_madgwick.h"
-#include "stepmotor.h"
 
 #define DEFAULT_ACCEL_BIAS_X				0
 #define DEFAULT_ACCEL_BIAS_Y				0
@@ -24,7 +21,7 @@
 
 #define STEPMOTOR_PWM_DUTY  				50
 
-imu_handle_t imu_handle = NULL;
+mpu6050_handle_t mpu6050_handle = NULL;
 imu_madgwick_handle_t imu_madgwick_handle = NULL;
 stepmotor_handle_t motor_left_handle = NULL;
 stepmotor_handle_t motor_right_handle = NULL;
@@ -33,50 +30,47 @@ encoder_handle_t encoder_right_handle = NULL;
 
 err_code_t periph_imu_init(periph_imu_cfg_t cfg)
 {
-	/* Config MPU6500 and AK8963 */
-	imu_handle = imu_init();
-	if (imu_handle == NULL)
+#ifdef USE_MPU6050
+	/* Config MPU6500 */
+	mpu6050_handle = mpu6050_init();
+	if (mpu6050_handle == NULL)
 	{
 		return ERR_CODE_NULL_PTR;
 	}
 
 	err_code_t err_ret;
 
-	imu_cfg_t imu_cfg = {
-		.accel_bias_x = DEFAULT_ACCEL_BIAS_X,
-		.accel_bias_y = DEFAULT_ACCEL_BIAS_Y,
-		.accel_bias_z = DEFAULT_ACCEL_BIAS_Z,
-		.gyro_bias_x = DEFAULT_GYRO_BIAS_X,
-		.gyro_bias_y = DEFAULT_GYRO_BIAS_Y,
-		.gyro_bias_z = DEFAULT_GYRO_BIAS_Z,
-		.mag_hard_iron_bias_x = DEFAULT_MAG_HARD_BIAS_X,
-		.mag_hard_iron_bias_y = DEFAULT_MAG_HARD_BIAS_Y,
-		.mag_hard_iron_bias_z = DEFAULT_MAG_HARD_BIAS_Z,
-		.mag_soft_iron_bias_x = DEFAULT_MAG_SOFT_BIAS_X,
-		.mag_soft_iron_bias_y = DEFAULT_MAG_SOFT_BIAS_Y,
-		.mag_soft_iron_bias_z = DEFAULT_MAG_SOFT_BIAS_Z,
-		.func_delay = cfg.func_delay,
-		.mpu6050_read_bytes = cfg.mpu6050_read_bytes,
-		.mpu6050_write_bytes = cfg.mpu6050_write_bytes,
-		.ak8963_read_bytes = cfg.ak8963_read_bytes,
-		.ak8963_write_bytes = cfg.ak8963_write_bytes,
-		.mpu6500_read_bytes = cfg.mpu6500_read_bytes,
-		.mpu6500_write_bytes = cfg.mpu6500_write_bytes,
+	mpu6050_cfg_t mpu6050_cfg = {
+		.clksel = cfg.clksel,
+		.dlpf_cfg = cfg.dlpf_cfg,
+		.sleep_mode = cfg.sleep_mode,
+		.gfs_sel = cfg.gfs_sel,
+		.afs_sel = cfg.afs_sel,
+		.accel_bias_x = 0,
+		.accel_bias_y = 0,
+		.accel_bias_z = 0,
+		.gyro_bias_x = 0,
+		.gyro_bias_y = 0,
+		.gyro_bias_z = 0,
+		.i2c_send = cfg.i2c_send,
+		.i2c_recv = cfg.i2c_recv,
+		.delay = cfg.delay
 	};
-	err_ret = imu_set_config(imu_handle, imu_cfg);
+
+	err_ret = mpu6050_set_config(mpu6050_handle, mpu6050_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
-	err_ret = imu_config(imu_handle);
+	err_ret = mpu6050_config(mpu6050_handle);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
-	imu_auto_calib(imu_handle);
-
+	mpu6050_auto_calib(mpu6050_handle);
+#endif
 	return ERR_CODE_SUCCESS;
 }
 
@@ -112,14 +106,11 @@ err_code_t periph_imu_filter_init(periph_imu_filter_cfg_t cfg)
 
 err_code_t periph_imu_get_accel(float *accel_x, float *accel_y, float* accel_z)
 {
-	if (imu_madgwick_handle == NULL)
-	{
-		return ERR_CODE_NULL_PTR;
-	}
-
 	err_code_t err_ret;
 
-	err_ret = imu_get_accel_scale(imu_handle, accel_x, accel_y, accel_z);
+#ifdef USE_MPU6050
+	err_ret = mpu6050_get_accel_scale(mpu6050_handle, accel_x, accel_y, accel_z);
+#endif
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
@@ -130,14 +121,11 @@ err_code_t periph_imu_get_accel(float *accel_x, float *accel_y, float* accel_z)
 
 err_code_t periph_imu_get_gyro(float *gyro_x, float *gyro_y, float* gyro_z)
 {
-	if (imu_madgwick_handle == NULL)
-	{
-		return ERR_CODE_NULL_PTR;
-	}
-
 	err_code_t err_ret;
 
-	err_ret = imu_get_gyro_scale(imu_handle, gyro_x, gyro_y, gyro_z);
+#ifdef USE_MPU6050
+	err_ret = mpu6050_get_gyro_scale(mpu6050_handle, gyro_x, gyro_y, gyro_z);
+#endif
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
@@ -149,7 +137,7 @@ err_code_t periph_imu_get_gyro(float *gyro_x, float *gyro_y, float* gyro_z)
 
 err_code_t periph_imu_update_quat(void)
 {
-	if ((imu_handle == NULL) || (imu_madgwick_handle == NULL))
+	if ((mpu6050_handle == NULL) || (imu_madgwick_handle == NULL))
 	{
 		return ERR_CODE_NULL_PTR;
 	}
@@ -158,17 +146,19 @@ err_code_t periph_imu_update_quat(void)
 	float accel_x, accel_y, accel_z;
 	float gyro_x, gyro_y, gyro_z;
 
-	err_ret = imu_get_accel_scale(imu_handle, &accel_x, &accel_y, &accel_z);
+#ifdef USE_MPU6050
+	err_ret = mpu6050_get_accel_scale(mpu6050_handle, &accel_x, &accel_y, &accel_z);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
 
-	err_ret = imu_get_gyro_scale(imu_handle, &gyro_x, &gyro_y, &gyro_z);
+	err_ret = mpu6050_get_gyro_scale(mpu6050_handle, &gyro_x, &gyro_y, &gyro_z);
 	if (err_ret != ERR_CODE_SUCCESS)
 	{
 		return err_ret;
 	}
+#endif
 
 	err_ret = imu_madgwick_update_6dof(imu_madgwick_handle, gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z);
 	if (err_ret != ERR_CODE_SUCCESS)
