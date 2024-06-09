@@ -50,13 +50,11 @@ static void base_control_init_joint_state(void);
 static void base_control_init_odom(void);
 
 static void base_control_update_joint_state(void);
-static void base_control_update_joint(void);
 static void base_control_update_odom(void);
 static void base_control_update_tf(geometry_msgs::TransformStamped &odom_tf);
 static bool base_control_calc_odom(float diff_time);
 static sensor_msgs::Imu base_control_get_imu(void);
 
-static ros::Time base_control_ros_time_add_microsec(ros::Time &t, uint32_t _micros);
 static ros::Time base_control_get_ros_time(void);
 
 static void base_control_callback_cmd_vel(const geometry_msgs::Twist &cmd_vel_msg);
@@ -163,16 +161,6 @@ static ros::Time base_control_get_ros_time(void)
     return RosNodeHandle.now();
 }
 
-static ros::Time base_control_ros_time_add_microsec(ros::Time &t, uint32_t _micros)
-{
-    uint32_t sec, nsec;
-
-    sec = _micros / 1000 + t.sec;
-    nsec = _micros % 1000000000 + t.nsec;
-
-    return ros::Time(sec, nsec);
-}
-
 static void base_control_update_odom(void)
 {
 #ifdef ROBOT_MODEL_DIFF_DRIVE
@@ -206,11 +194,6 @@ static void base_control_update_joint_state(void)
 #endif
     joint_states.position = (double *)joint_states_pos;
     joint_states.velocity = (double *)joint_states_vel;
-}
-
-static void base_control_update_joint(void)
-{
-
 }
 
 static void base_control_update_tf(geometry_msgs::TransformStamped &odom_tf)
@@ -602,3 +585,17 @@ uint32_t base_control_get_time_callback_cmdvel(void)
     return record_time[RECORD_TIME_CALLBACK_CMDVEL];
 }
 
+//ros::Time base_control_ros_time_add_microsec(ros::Time &t, uint32_t _micros)
+//{
+//    uint32_t sec, nsec;
+//
+//    sec = _micros / 1000 + t.sec;
+//    nsec = _micros % 1000000000 + t.nsec;
+//
+//    return ros::Time(sec, nsec);
+//}
+
+//void base_control_update_joint(void)
+//{
+//
+//}
