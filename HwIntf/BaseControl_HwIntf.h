@@ -29,6 +29,9 @@ extern "C" {
 
 #include "err_code.h"
 
+uint32_t hw_intf_get_time_ms(void);
+void hw_intf_delay_ms(uint32_t time_ms);
+
 /*
  * @brief   MPU6050 read bytes function.
  *

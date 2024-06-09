@@ -23,22 +23,6 @@
 #ifndef _ROBOT_ROS_CONFIG_H_
 #define _ROBOT_ROS_CONFIG_H_
 
-typedef uint32_t (*base_control_get_time_milisec)(void);
-typedef void (*base_control_delay)(uint32_t time_ms);
-
-/*
- * @brief   Set functions for ROS.
- *
- * @note 	This function must be called first to assign hardware interface.
- *
- * @param   get_time Function get time.
- * @param   delay Function delay.
- *
- * @return  None.
- */
-void base_control_set_ros_func(base_control_get_time_milisec get_time,
-                               base_control_delay delay);
-
 /*
  * @brief   This function do the following jobs as below:
  *				- Initialize ROS node handle.

@@ -21,6 +21,7 @@
 #include "Periph/Periph.h"
 #include "BaseControl_Define.h"
 #include "BaseControl.h"
+#include "BaseControl_HwIntf.h"
 #include "differential_drive.h"
 
 #define USE_ROS_LOG_DEBUG
@@ -60,9 +61,6 @@ static ros::Time base_control_get_ros_time(void);
 
 static void base_control_callback_cmd_vel(const geometry_msgs::Twist &cmd_vel_msg);
 static void base_control_callback_reset(const std_msgs::Empty &reset_msg);
-
-base_control_get_time_milisec func_get_time_milis = NULL;
-base_control_delay func_delay = NULL;
 
 uint32_t record_time[5];
 
@@ -110,7 +108,7 @@ diff_drive_handle_t robot_kinematic_handle = NULL;
 
 static uint32_t millis(void)
 {
-    return func_get_time_milis();
+    return hw_intf_get_time_ms();
 }
 
 static float constrain(float x, float low_val, float high_val)
@@ -331,13 +329,6 @@ static sensor_msgs::Imu base_control_get_imu(void)
     imu_msg_.orientation_covariance[8] = 0.0025;
 
     return imu_msg_;
-}
-
-void base_control_set_ros_func(base_control_get_time_milisec get_time,
-                               base_control_delay delay)
-{
-    func_get_time_milis = get_time;
-    func_delay = delay;
 }
 
 void base_control_ros_setup(void)
@@ -569,7 +560,7 @@ void base_control_wait_serial_link(bool isConnected)
     {
         if (wait_flag == false)
         {
-            func_delay(10);
+            hw_intf_delay_ms(10);
 
             wait_flag = true;
         }
