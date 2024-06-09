@@ -1,6 +1,6 @@
 // MIT License
 
-// Copyright (c) 2020 phonght32
+// Copyright (c) 2024 phonght32
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,171 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _ROBOT_ROS_CONFIG_H_
-#define _ROBOT_ROS_CONFIG_H_
+#ifndef __BASECONTROL_PUBLIC_H__
+#define __BASECONTROL_PUBLIC_H__
 
-/*
- * @brief   This function do the following jobs as below:
- *				- Initialize ROS node handle.
- *				- Initialize transform broadcaster.
- *				- Initialize odometry.
- *				- Initialize joint state.
- *				- Subscribe topic "cmd_vel" and "reset".
- * 				- Advertise data to topic "imu", "cmd_vel_motor", "odom" and "joint_states".
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_ros_setup(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * @brief   Setup robot kinematic model. Currently differential wheeled drive is 
- *          supported. Other robot kinematic model will be developed in future.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_setup(void);
+#include "err_code.h"
 
-/*
- * @brief  	Get connection status between base control and ROS node.
- *
- * @param   None.
- *
- * @return
- *      - TRUE:		Connected.
- *      - FALSE: 	Not connected.
- */
-bool base_control_connect_status(void);
+err_code_t BaseControl_Init(void);
+err_code_t BaseControl_Main(void);
 
-/*
- * @brief  	Spin once to keep connnection.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_spin_once(void);
 
-/*
- * @brief   Update current ROS time and time offset to base control.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_update_time(void);
+#ifdef __cplusplus
+}
+#endif
 
-/*
- * @brief   Re-initialize odometry if rosserial lost communication happened.
- *
- * @param   isConnected Check rosserial connect.
- *
- * @return  None.
- */
-void base_control_update_variable(bool isConnected);
-
-/*
- * @brief   Re-initialize tf if rosserial lost communication happened.
- *
- * @param   isConnected Check rosserial connect.
- *
- * @return  None.
- */
-void base_control_update_tf_prefix(bool isConnected);
-
-/*
- * @brief   Update goal velocity from topic control velocity ("cmd_vel" by default).
- *
- * @note 	Goal velocity include linear and angular velocity.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_update_goal_vel(void);
-
-/*
- * @brief   Set zero velocity to motor.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_set_zero_vel(void);
-
-/*
- * @brief   Set goal velocity to motor.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_set_goal_vel(void);
-
-/*
- * @brief   Publish linear and angular velocity to "cmd_vel_motor" topic.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_publish_cmdvel_from_motor_msg(void);
-
-/*
- * @brief   Calculate odometry and publish odometry to ROS.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_publish_drive_info(void);
-
-/*
- * @brief   Update IMU quaternion.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_update_imu(void);
-
-/*
- * @brief   Publish IMU information.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_publish_imu_msg(void);
-
-/*
- * @brief   Wait rosserial connection.
- *
- * @param   isConnected Check rosserial connect.
- *
- * @return  None.
- */
-void base_control_wait_serial_link(bool isConnected);
-
-/*
- * @brief   Send Log messages.
- *
- * @param   None.
- *
- * @return  None.
- */
-void base_control_send_log_msg(void);
-
-/*
- * @brief   Get timestamp when callback of topic "cmd_vel" is triggered.
- *
- * @param   None.
- *
- * @return  Timestamp.
- */
-uint32_t base_control_get_time_callback_cmdvel(void);
-
-#endif /* _ROBOT_ROS_CONFIG_H_ */
+#endif /* __BASECONTROL_PUBLIC_H__ */

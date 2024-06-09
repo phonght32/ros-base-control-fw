@@ -19,8 +19,8 @@
 #include "nav_msgs/Odometry.h"
 
 #include "Periph/Periph.h"
+#include "BaseControl_Private.h"
 #include "BaseControl_Define.h"
-#include "BaseControl.h"
 #include "BaseControl_HwIntf.h"
 #include "differential_drive.h"
 

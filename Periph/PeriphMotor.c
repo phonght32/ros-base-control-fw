@@ -1,5 +1,6 @@
 #include "Periph.h"
 #include "BaseControl_Define.h"
+#include "BaseControl_HwIntf.h"
 #include "stepmotor.h"
 #include "encoder.h"
 
@@ -13,7 +14,7 @@ encoder_handle_t encoder_right_handle = NULL;
 stepmotor_handle_t motor_left_handle = NULL;
 stepmotor_handle_t motor_right_handle = NULL;
 
-err_code_t periph_motor_init(periph_motor_cfg_t cfg)
+err_code_t periph_motor_init(void)
 {
 	err_code_t err_ret;
 
@@ -25,14 +26,14 @@ err_code_t periph_motor_init(periph_motor_cfg_t cfg)
 	}
 
 	stepmotor_cfg_t leftmotor_cfg = {
-		.dir = cfg.leftmotor_dir,
-		.duty = cfg.leftmotor_duty,
-		.freq_hz = cfg.leftmotor_freq_hz,
-		.set_pwm_duty = cfg.leftmotor_set_pwm_duty,
-		.set_pwm_freq = cfg.leftmotor_set_pwm_freq,
-		.start_pwm = cfg.leftmotor_start_pwm,
-		.stop_pwm = cfg.leftmotor_stop_pwm,
-		.set_dir = cfg.leftmotor_set_dir
+		.dir = 0,
+		.duty = 0,
+		.freq_hz = 0,
+		.set_pwm_duty = hw_intf_leftmotor_set_pwm_duty,
+		.set_pwm_freq = hw_intf_leftmotor_set_pwm_freq,
+		.start_pwm = hw_intf_leftmotor_start,
+		.stop_pwm = hw_intf_leftmotor_stop,
+		.set_dir = hw_intf_leftmotor_set_dir,
 	};
 	err_ret = stepmotor_set_config(motor_left_handle, leftmotor_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
@@ -54,14 +55,14 @@ err_code_t periph_motor_init(periph_motor_cfg_t cfg)
 	}
 
 	stepmotor_cfg_t rightmotor_cfg = {
-		.dir = cfg.rightmotor_dir,
-		.duty = cfg.rightmotor_duty,
-		.freq_hz = cfg.rightmotor_freq_hz,
-		.set_pwm_duty = cfg.rightmotor_set_pwm_duty,
-		.set_pwm_freq = cfg.rightmotor_set_pwm_freq,
-		.start_pwm = cfg.rightmotor_start_pwm,
-		.stop_pwm = cfg.rightmotor_stop_pwm,
-		.set_dir = cfg.rightmotor_set_dir
+		.dir = 0,
+		.duty = 0,
+		.freq_hz = 0,
+		.set_pwm_duty = hw_intf_rightmotor_set_pwm_duty,
+		.set_pwm_freq = hw_intf_rightmotor_set_pwm_freq,
+		.start_pwm = hw_intf_rightmotor_start,
+		.stop_pwm = hw_intf_rightmotor_stop,
+		.set_dir = hw_intf_rightmotor_set_dir
 	};
 	err_ret = stepmotor_set_config(motor_right_handle, rightmotor_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
@@ -209,7 +210,7 @@ err_code_t periph_motor_right_set_speed(float speed)
 	return ERR_CODE_SUCCESS;
 }
 
-err_code_t periph_encoder_init(periph_encoder_cfg_t cfg)
+err_code_t periph_encoder_init(void)
 {
 	err_code_t err_ret;
 
@@ -221,12 +222,12 @@ err_code_t periph_encoder_init(periph_encoder_cfg_t cfg)
 	}
 
 	encoder_cfg_t left_encoder_cfg = {
-		.max_reload = cfg.left_encoder_max_reload,
-		.start = cfg.left_encoder_start,
-		.stop = cfg.left_encoder_stop,
-		.set_counter = cfg.left_encoder_set_counter,
-		.get_counter = cfg.left_encoder_get_counter,
-		.set_mode = cfg.left_encoder_set_mode,
+		.max_reload = NUM_PULSE_PER_ROUND * MICROSTEP_DIV,
+		.start = hw_intf_left_encoder_start,
+		.stop = hw_intf_left_encoder_stop,
+		.set_counter = hw_intf_left_encoder_set_counter,
+		.get_counter = hw_intf_left_encoder_get_counter,
+		.set_mode = hw_intf_left_encoder_set_mode,
 	};
 	err_ret = encoder_set_config(encoder_left_handle, left_encoder_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
@@ -248,12 +249,12 @@ err_code_t periph_encoder_init(periph_encoder_cfg_t cfg)
 	}
 
 	encoder_cfg_t right_encoder_cfg = {
-		.max_reload = cfg.right_encoder_max_reload,
-		.start = cfg.right_encoder_start,
-		.stop = cfg.right_encoder_stop,
-		.set_counter = cfg.right_encoder_set_counter,
-		.get_counter = cfg.right_encoder_get_counter,
-		.set_mode = cfg.right_encoder_set_mode,
+		.max_reload = NUM_PULSE_PER_ROUND * MICROSTEP_DIV,
+		.start = hw_intf_right_encoder_start,
+		.stop = hw_intf_right_encoder_stop,
+		.set_counter = hw_intf_right_encoder_set_counter,
+		.get_counter = hw_intf_right_encoder_get_counter,
+		.set_mode = hw_intf_right_encoder_set_mode
 	};
 	err_ret = encoder_set_config(encoder_right_handle, right_encoder_cfg);
 	if (err_ret != ERR_CODE_SUCCESS)
