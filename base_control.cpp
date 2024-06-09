@@ -18,10 +18,10 @@
 #include "tf/transform_broadcaster.h"
 #include "nav_msgs/Odometry.h"
 
-#include "periph/periph.h"
-#include "base_control_hw_define.h"
+#include "Periph/Periph.h"
+#include "BaseControl_Define.h"
 #include "base_control.h"
-#include "differential_drive/differential_drive.h"
+#include "differential_drive.h"
 
 #define USE_ROS_LOG_DEBUG
 

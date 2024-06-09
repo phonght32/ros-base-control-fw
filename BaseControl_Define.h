@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __HW_DEFINE_H__
-#define __HW_DEFINE_H__
+#ifndef __BASECONTROL_DEFINE_H__
+#define __BASECONTROL_DEFINE_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,4 +72,4 @@ extern "C" {
 }
 #endif
 
-#endif /* __HW_DEFINE_H__ */
+#endif /* __BASECONTROL_DEFINE_H__ */

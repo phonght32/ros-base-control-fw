@@ -27,12 +27,10 @@
 extern "C" {
 #endif
 
-#include "mpu6050/mpu6050.h"
-#include "madgwick/imu_madgwick.h"
+#include "err_code.h"
 #include "stepmotor.h"
 #include "encoder.h"
-
-#include "err_code.h"
+#include "mpu6050.h"
 
 #define USE_MPU6050
 
@@ -91,187 +89,23 @@ typedef struct {
 	encoder_func_set_mode		right_encoder_set_mode;				/*!< Function set mode counter up */
 } periph_encoder_cfg_t;
 
-/*
- * @brief  	Initialize IMU.
- *
- * @param   cfg Configuration structure.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_imu_init(periph_imu_cfg_t cfg);
-
-/*
- * @brief  	Initialize IMU filter.
- *
- * @param   cfg Configuration structure.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_imu_filter_init(periph_imu_filter_cfg_t cfg);
-
-/*
- * @brief  	Get scaled accelerometer.
- *
- * @param   accel_x Accelerometer x axis.
- * @param   accel_y Accelerometer y axis.
- * @param   accel_z Accelerometer z axis.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_imu_get_accel(float *accel_x, float *accel_y, float* accel_z);
-
-/*
- * @brief  	Get scaled gyroscope.
- *
- * @param   gyro_x Gyroscope x axis.
- * @param   gyro_y Gyroscope y axis.
- * @param   gyro_z Gyroscope z axis.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_imu_get_gyro(float *gyro_x, float *gyro_y, float* gyro_z);
-
-/*
- * @brief  	Update quaternion.
- *
- * @param   None.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_imu_update_quat(void);
-
-/*
- * @brief  	Get quaternion.
- *
- * @param   q0 Q0.
- * @param   q1 Q1.
- * @param   q2 Q2.
- * @param   q3 Q3.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_imu_get_quat(float *q0, float *q1, float *q2, float* q3);
 
-/*
- * @brief  	Initialize all motor.
- *
- * @param   cfg Configuration structure.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_motor_init(periph_motor_cfg_t cfg);
-
-/*
- * @brief  	Start motor left.
- *
- * @param   None.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_motor_left_start(void);
-
-/*
- * @brief  	Stop motor left.
- *
- * @param   None.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_motor_left_stop(void);
-
-/*
- * @brief  	Set speed motor left.
- *
- * @param   speed Speed in m/s.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_motor_left_set_speed(float speed);
-
-/*
- * @brief  	Start motor right.
- *
- * @param   None.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_motor_right_start(void);
-
-/*
- * @brief  	Stop motor right.
- *
- * @param   None.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_motor_right_stop(void);
-
-/*
- * @brief  	Set speed motor right.
- *
- * @param   speed Speed in m/s.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_motor_right_set_speed(float speed);
 
-/*
- * @brief  	Initialize encoder.
- *
- * @param   cfg Configuration structure.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_encoder_init(periph_encoder_cfg_t cfg);
-
-/*
- * @brief  	Get left encoder tick.
- *
- * @param   left_tick Left tick value.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_encoder_left_get_tick(int32_t *tick);
-
-/*
- * @brief  	Get right encoder tick.
- *
- * @param   tick Right tick value.
- *
- * @return
- *      - ERR_CODE_SUCCESS:	Success.
- *      - Others:   		Fail.
- */
 err_code_t periph_encoder_right_get_tick(int32_t *tick);
 
 
