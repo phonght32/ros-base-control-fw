@@ -21,7 +21,7 @@
 #include "Periph/Periph.h"
 #include "BaseControl_Private.h"
 #include "BaseControl_Define.h"
-#include "BaseControl_HwIntf.h"
+#include "hw_intf.h"
 #include "differential_drive.h"
 
 #define USE_ROS_LOG_DEBUG
