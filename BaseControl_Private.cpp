@@ -19,6 +19,7 @@
 #include "nav_msgs/Odometry.h"
 
 #include "Periph/Periph.h"
+#include "motor/periph_motor.h"
 #include "BaseControl_Private.h"
 #include "BaseControl_Define.h"
 #include "hw_intf.h"
