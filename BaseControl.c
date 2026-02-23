@@ -1,6 +1,6 @@
 #include "BaseControl_Private.h"
 #include "BaseControl.h"
-#include "BaseControl_HwIntf.h"
+#include "hw_intf.h"
 #include "Periph.h"
 
 /* Time update index */

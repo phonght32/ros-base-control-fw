@@ -1,6 +1,6 @@
 #include "Periph.h"
 #include "BaseControl_Define.h"
-#include "BaseControl_HwIntf.h"
+#include "hw_intf.h"
 #include "stepmotor.h"
 #include "encoder.h"
 

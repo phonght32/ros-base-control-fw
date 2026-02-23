@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __BASECONTROL_HWINTF_H__
-#define __BASECONTROL_HWINTF_H__
+#ifndef __PROJECT_HW_INTF_H__
+#define __PROJECT_HW_INTF_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,4 +62,4 @@ err_code_t hw_intf_right_encoder_set_mode(uint8_t mode);
 }
 #endif
 
-#endif /* __BASECONTROL_HWINTF_H__ */
+#endif /* __PROJECT_HW_INTF_H__ */

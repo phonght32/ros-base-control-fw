@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __PERIPH_H__
-#define __PERIPH_H__
+#ifndef __PERIPH_MOTOR_H__
+#define __PERIPH_MOTOR_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,20 +29,16 @@ extern "C" {
 
 #include "err_code.h"
 
-err_code_t periph_imu_init(void);
-err_code_t periph_imu_filter_init(void);
-err_code_t periph_imu_get_accel(float *accel_x, float *accel_y, float* accel_z);
-err_code_t periph_imu_get_gyro(float *gyro_x, float *gyro_y, float* gyro_z);
-err_code_t periph_imu_update_quat(void);
-err_code_t periph_imu_get_quat(float *q0, float *q1, float *q2, float* q3);
-
-err_code_t periph_encoder_init(void);
-err_code_t periph_encoder_left_get_tick(int32_t *tick);
-err_code_t periph_encoder_right_get_tick(int32_t *tick);
-
+err_code_t periph_motor_init(void);
+err_code_t periph_motor_left_start(void);
+err_code_t periph_motor_left_stop(void);
+err_code_t periph_motor_left_set_speed(float speed);
+err_code_t periph_motor_right_start(void);
+err_code_t periph_motor_right_stop(void);
+err_code_t periph_motor_right_set_speed(float speed);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __PERIPH_H__ */
+#endif /* __PERIPH_MOTOR_H__ */
