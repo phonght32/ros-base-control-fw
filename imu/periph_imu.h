@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __PERIPH_H__
-#define __PERIPH_H__
+#ifndef __PERIPH_IMU_H__
+#define __PERIPH_IMU_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,13 +36,8 @@ err_code_t periph_imu_get_gyro(float *gyro_x, float *gyro_y, float* gyro_z);
 err_code_t periph_imu_update_quat(void);
 err_code_t periph_imu_get_quat(float *q0, float *q1, float *q2, float* q3);
 
-err_code_t periph_encoder_init(void);
-err_code_t periph_encoder_left_get_tick(int32_t *tick);
-err_code_t periph_encoder_right_get_tick(int32_t *tick);
-
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __PERIPH_H__ */
+#endif /* __PERIPH_IMU_H__ */

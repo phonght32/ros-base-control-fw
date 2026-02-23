@@ -37,6 +37,10 @@ err_code_t periph_motor_right_start(void);
 err_code_t periph_motor_right_stop(void);
 err_code_t periph_motor_right_set_speed(float speed);
 
+err_code_t periph_encoder_init(void);
+err_code_t periph_encoder_left_get_tick(int32_t *tick);
+err_code_t periph_encoder_right_get_tick(int32_t *tick);
+
 #ifdef __cplusplus
 }
 #endif

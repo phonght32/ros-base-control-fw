@@ -1,7 +1,7 @@
 #include "BaseControl_Private.h"
 #include "BaseControl.h"
 #include "hw_intf.h"
-#include "Periph.h"
+#include "motor/periph_motor.h"
 
 /* Time update index */
 #define CONTROL_MOTOR_TIME_INDEX                0       /*!< Time index control motor */

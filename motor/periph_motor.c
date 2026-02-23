@@ -1,4 +1,3 @@
-#include "Periph.h"
 #include "BaseControl_Define.h"
 #include "hw_intf.h"
 #include "stepmotor.h"
