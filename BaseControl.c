@@ -23,7 +23,7 @@
 
 uint32_t base_control_time_update[10];
 
-err_code_t BaseControl_Init(void)
+void BaseControl_Init(void)
 {
 	/* Initialize peripherals */
 	periph_imu_init();
@@ -36,11 +36,9 @@ err_code_t BaseControl_Init(void)
 
 	/* Initialize base control */
 	base_control_setup();
-
-	return ERR_CODE_SUCCESS;
 }
 
-err_code_t BaseControl_Main(void)
+void BaseControl_Main(void)
 {
 	/* Update time counter */
 	uint32_t t = hw_intf_get_time_ms();
@@ -107,6 +105,4 @@ err_code_t BaseControl_Main(void)
 
 	/* Keep rosserial connection */
 	base_control_wait_serial_link(base_control_connect_status());
-
-	return ERR_CODE_SUCCESS;
 }

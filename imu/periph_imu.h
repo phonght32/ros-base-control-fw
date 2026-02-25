@@ -25,16 +25,14 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif  
 
-#include "err_code.h"
-
-err_code_t periph_imu_init(void);
-err_code_t periph_imu_filter_init(void);
-err_code_t periph_imu_get_accel(float *accel_x, float *accel_y, float* accel_z);
-err_code_t periph_imu_get_gyro(float *gyro_x, float *gyro_y, float* gyro_z);
-err_code_t periph_imu_update_quat(void);
-err_code_t periph_imu_get_quat(float *q0, float *q1, float *q2, float* q3);
+void periph_imu_init(void);
+void periph_imu_filter_init(void);
+void periph_imu_get_accel(float *accel_x, float *accel_y, float* accel_z);
+void periph_imu_get_gyro(float *gyro_x, float *gyro_y, float* gyro_z);
+void periph_imu_update_quat(void);
+void periph_imu_get_quat(float *q0, float *q1, float *q2, float* q3);
 
 #ifdef __cplusplus
 }

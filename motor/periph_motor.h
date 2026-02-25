@@ -27,19 +27,17 @@
 extern "C" {
 #endif
 
-#include "err_code.h"
+void periph_motor_init(void);
+void periph_motor_left_start(void);
+void periph_motor_left_stop(void);
+void periph_motor_left_set_speed(float speed);
+void periph_motor_right_start(void);
+void periph_motor_right_stop(void);
+void periph_motor_right_set_speed(float speed);
 
-err_code_t periph_motor_init(void);
-err_code_t periph_motor_left_start(void);
-err_code_t periph_motor_left_stop(void);
-err_code_t periph_motor_left_set_speed(float speed);
-err_code_t periph_motor_right_start(void);
-err_code_t periph_motor_right_stop(void);
-err_code_t periph_motor_right_set_speed(float speed);
-
-err_code_t periph_encoder_init(void);
-err_code_t periph_encoder_left_get_tick(int32_t *tick);
-err_code_t periph_encoder_right_get_tick(int32_t *tick);
+void periph_encoder_init(void);
+void periph_encoder_left_get_tick(int32_t *tick);
+void periph_encoder_right_get_tick(int32_t *tick);
 
 #ifdef __cplusplus
 }

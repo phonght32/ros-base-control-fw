@@ -27,10 +27,8 @@
 extern "C" {
 #endif
 
-#include "err_code.h"
-
-err_code_t BaseControl_Init(void);
-err_code_t BaseControl_Main(void);
+void BaseControl_Init(void);
+void BaseControl_Main(void);
 
 
 #ifdef __cplusplus
